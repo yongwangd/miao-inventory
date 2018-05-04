@@ -4,13 +4,20 @@ import validator from "validator";
 import PropTypes from "prop-types";
 import {
   Collapse,
+  Divider,
   Button,
   message,
   Popconfirm,
+  Popover,
   Spin,
   Table,
   Menu,
   Dropdown,
+  Form,
+  InputNumber,
+  Modal,
+  Icon,
+  Input
 } from "antd";
 import LabelFieldSet from "../../../commonCmps/LabelFieldSet";
 import simpleForm from "../../../lib/simpleForm";
@@ -19,6 +26,7 @@ import simpleForm from "../../../lib/simpleForm";
 import createUUID from "../../../lib/uuidTool";
 import TagInputContainer from "../containers/TagInputContainer";
 import { a } from "../contactUtility";
+import { actions } from "../../../store/authReducer";
 
 const { Panel } = Collapse;
 
@@ -30,7 +38,6 @@ const validation = () => {
   // }
   return err;
 };
-
 
 const variantColumns = [
   {
@@ -44,20 +51,24 @@ const variantColumns = [
     key: "primary",
     render: (text, record) => {
       const menu = (
-        <Menu>
-          <Menu.Item>
-            <a onClick={() => message.info("In Stock")}>In Stock</a>
-            <a onClick={() => message.info("In Move to S")}>Move to Secondary Storage</a>
-            <a >Reset</a>
-          </Menu.Item>
-        </Menu>
+        <div>
+          <div>
+            <a onClick={() => message.info("In Stock")}>New Arrivals: </a>
+            <InputNumber min={0} defaultValue={0} />
+          </div>
+
+          <a onClick={() => message.info("In Move to S")}>
+            Move to Secondary Storage
+          </a>
+          <a>Reset</a>
+        </div>
       );
       return (
-        <Dropdown overlay={menu}>
+        <Popover content={menu} title="Actions">
           <a className="ant-dropdown-link" style={{ color: "blue" }}>
             {text}
           </a>
-        </Dropdown>
+        </Popover>
       );
     }
   },
@@ -65,6 +76,17 @@ const variantColumns = [
     title: "Secondary",
     dataIndex: "secondary",
     key: "secondary"
+  },
+  {
+    title: "Actions",
+    key: "action",
+    render: (text, record) => (
+      <span>
+        <a>
+          <Icon type="close" />
+        </a>
+      </span>
+    )
   }
 ];
 
@@ -210,6 +232,18 @@ class ContactItemForm extends Component {
                 columns={variantColumns}
                 dataSource={variant.vendors}
               />
+              <Button
+                size="small"
+                type="primary"
+                style={{ marginTop: 15 }}
+                onClick={() =>
+                  Modal.warning({
+                    title: "This is a warning message",
+                    content: "some messages...some messages..."
+                  })}
+              >
+                Add Vendor
+              </Button>
             </Panel>
           ))}
         </Collapse>
