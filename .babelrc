@@ -4,6 +4,7 @@
 	  "transform-decorators-legacy",
 	  "babel-plugin-transform-runtime",
 	   "babel-plugin-syntax-dynamic-import",
-	  "transform-class-properties", "transform-object-rest-spread", "transform-do-expressions", "syntax-trailing-function-commas"
+    "transform-class-properties", "transform-object-rest-spread", "transform-do-expressions", "syntax-trailing-function-commas",
+    ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]
   ]
 }

@@ -3,13 +3,24 @@ import React, { Component } from "react";
 import validator from "validator";
 import R from "ramda";
 import PropTypes from "prop-types";
-import { Collapse, Button, message, Popconfirm, Spin } from "antd";
+import {
+  Collapse,
+  Button,
+  message,
+  Popconfirm,
+  Spin,
+  Table,
+  Menu,
+  Dropdown,
+  Icon
+} from "antd";
 import LabelFieldSet from "../../../commonCmps/LabelFieldSet";
 import simpleForm from "../../../lib/simpleForm";
-import ImageViewer from "../../../commonCmps/ImageViewer";
-import { getBusinessCardRef } from "../../../fireQuery/fireConnection";
+// import ImageViewer from "../../../commonCmps/ImageViewer";
+// import { getBusinessCardRef } from "../../../fireQuery/fireConnection";
 import createUUID from "../../../lib/uuidTool";
 import TagInputContainer from "../containers/TagInputContainer";
+import { a } from "../contactUtility";
 
 const { Panel } = Collapse;
 
@@ -28,56 +39,61 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 
+const variantColumns = [
+  {
+    title: "Vendor",
+    dataIndex: "label",
+    key: "label"
+  },
+  {
+    title: "Primary",
+    dataIndex: "primary",
+    key: "primary",
+    render: (text, record) => {
+      const menu = (
+        <Menu>
+          <Menu.Item>
+            <a>In Stock</a>
+            <a>Move to Secondary Storage</a>
+            <a>Reset</a>
+          </Menu.Item>
+        </Menu>
+      );
+      return (
+        <Dropdown overlay={menu}>
+          <a className="ant-dropdown-link" style={{ color: "blue" }}>
+            {text}
+          </a>
+        </Dropdown>
+      );
+    }
+  },
+  {
+    title: "Secondary",
+    dataIndex: "secondary",
+    key: "secondary"
+  }
+];
+
 @connect()
 @simpleForm({
   fields: [
     "name",
     "comment",
-    "inStock",
-    "tagKeySet",
-    "downloadURL",
-    "cardImageName"
+    // "inStock",
+    "tagKeySet"
+    // "downloadURL",
+    // "cardImageName"
   ],
   validate: validation
 })
 class ContactItemForm extends Component {
   state = {
-    cardImage: null,
-    cardImageName: null,
-    imageDeleted: false,
-    uploadLoading: false,
-    imageSrc: this.props.initData && this.props.initData.downloadURL
+    uploadLoading: false
   };
-
-  onFileSelect = file => {
-    this.setState({
-      cardImage: file,
-      cardImageName: createUUID(),
-      imageDeleted: false
-    });
-    getBase64(file, imageSrc =>
-      this.setState({
-        imageSrc
-      })
-    );
-  };
-
-  onDeleteFile = () => {
-    this.setState({
-      imageSrc: null,
-      cardImage: null,
-      cardImageName: null,
-      imageDeleted: true
-    });
-  };
-
-  originalImageSrc = this.state.imageSrc;
-  originalImageName = this.props.initData && this.props.initData.cardImageName;
 
   submit = async () => {
     const { fields, isFormValid, onOk, preSubmit } = this.props;
-    const { cardImage, cardImageName, imageDeleted } = this.state;
-    const { originalImageName } = this;
 
     preSubmit();
     if (!isFormValid) {
@@ -87,32 +103,13 @@ class ContactItemForm extends Component {
 
     const toUpdate = { ...fields };
 
-    let downloadURL = null;
-
     this.setState({ uploadLoading: true });
 
-    if (imageDeleted) {
-      toUpdate.cardImageName = null;
-      toUpdate.downloadURL = null;
-    } else if (
-      cardImage &&
-      cardImageName &&
-      originalImageName !== cardImageName
-    ) {
-      const snap = await getBusinessCardRef()
-        .child(cardImageName)
-        .put(cardImage);
-      downloadURL = snap.downloadURL;
-      // contact.downloadURL = downloadURL;
-      toUpdate.downloadURL = downloadURL;
-      toUpdate.cardImageName = cardImageName;
-    }
-    this.setState({ uploadLoading: false });
     onOk(toUpdate);
   };
 
   render() {
-    const { submit, onFileSelect, onDeleteFile, props } = this;
+    const { submit, props } = this;
     const {
       comment,
       hasSubmitted,
@@ -126,9 +123,54 @@ class ContactItemForm extends Component {
       loadingText = "Loading",
       tagKeySet = {}
     } = props;
-    const { imageSrc, uploadLoading } = this.state;
+    const { uploadLoading } = this.state;
 
-    const fieldArray = ["name", "comment", "inStock"];
+    const fieldArray = ["name"];
+
+    const variants = [
+      {
+        id: "12",
+        label: "12",
+        vendors: [
+          {
+            key: "amazon",
+            label: "Amazon",
+            primary: 13,
+            secondary: 10
+          },
+          {
+            key: "ebay",
+            label: "Ebay",
+            primary: 0,
+            secondary: 20
+          },
+          {
+            key: "walmart",
+            label: "Walmart",
+            primary: 20,
+            secondary: 0
+          }
+        ]
+      },
+      {
+        id: "14",
+        label: "14",
+        vendors: [
+          {
+            key: "amazon",
+            label: "Amazon",
+            primary: 13,
+            secondary: 10
+          },
+          {
+            key: "walmart",
+            label: "Walmart",
+            primary: 20,
+            secondary: 0
+          }
+        ]
+      }
+    ];
 
     const capitalize = str => str.slice(0, 1).toUpperCase() + str.slice(1);
 
@@ -144,10 +186,30 @@ class ContactItemForm extends Component {
       </LabelFieldSet>
     ));
 
+    const renderVariants = variants => {
+      console.log("render");
+
+      return (
+        <Collapse bordered={false} defaultActiveKey={["1"]}>
+          {variants.map(variant => (
+            <Panel key={variant.id} header={variant.label}>
+              <Table
+                size={"small"}
+                pagination={false}
+                columns={variantColumns}
+                dataSource={variant.vendors}
+              />
+            </Panel>
+          ))}
+        </Collapse>
+      );
+    };
+
     return (
       <Spin tip={loadingText} spinning={uploadLoading || loading}>
         <div>
           {renderField}
+
           <LabelFieldSet
             label="Comment"
             err={(hasSubmitted || comment.touched) && comment.error}
@@ -167,24 +229,8 @@ class ContactItemForm extends Component {
             </div>
           </LabelFieldSet>
 
-          <Collapse bordered={false} defaultActiveKey={["1"]}>
-            <Panel header="This is panel header 1" key="1">
-              FIrst Thing
-            </Panel>
-            <Panel header="This is panel header 2" key="2">
-              FIrst Thing
-            </Panel>
-            <Panel header="This is panel header 3" key="3">
-              FIrst Thing
-            </Panel>
-          </Collapse>
+          {renderVariants(variants)}
 
-          <ImageViewer
-            onFileSelect={onFileSelect}
-            buttonText={"Upload Business Card"}
-            onDeleteFile={onDeleteFile}
-            imageSrc={imageSrc}
-          />
           <Button
             style={{ marginTop: 10 }}
             type="primary"
