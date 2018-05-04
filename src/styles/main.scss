@@ -1,0 +1,242 @@
+@import 'base';
+@import '~bootstrap/scss/bootstrap.scss';
+@import 'material-ui.scss';
+// Some best-practice CSS that's useful for most apps
+// Just remove them if they're not what you want
+html {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+
+// Contact Card
+.contact-card {
+	background: lightgray;
+	margin-top: 15px;
+	.card-line {
+		font-size: 18px;
+		margin-bottom: 5px;
+	}
+	div {
+		font-size: 16px;
+	}
+}
+
+.avatar-uploader,
+.avatar-uploader-trigger,
+.avatar {
+	width: 100%;
+}
+
+.avatar-uploader {
+	display: block;
+	border: 1px dashed #d9d9d9;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.avatar-uploader-trigger {
+	display: table-cell;
+	vertical-align: middle;
+	font-size: 28px;
+	color: #999;
+	cursor: pointer;
+}
+
+@media screen and (min-width: 1200px) {
+	.bricklayer-column-sizer {
+		/* divide by 3. */
+		width: 33.3%;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.bricklayer-column-sizer {
+		/* divide by 2. */
+		width: 50%;
+	}
+}
+
+.content-body {
+	background-color: '#fff';
+	padding: 18px;
+	padding-top: 5px;
+	min-height: 280px
+}
+
+@media screen and (max-width: 768px) {
+	.ant-layout-content,
+	.ant-layout-header,
+	.ant-layout-footer {
+		padding: 0 5px !important;
+	}
+	.content-body {
+		background-color: '#fff';
+		padding: 2px;
+		padding-top: 5px;
+		min-height: 280px
+	}
+
+}
+
+
+//color box
+
+.color-list-container {
+}
+.color-box-wrapper {
+	display: inline-block;
+	padding: 3px;
+	border: 2px solid transparent;
+	border-radius: 15px;
+	margin: 4px;
+	cursor: pointer;
+}
+
+.color-box-wrapper-active {
+	border: 2px solid lightgray;
+}
+
+.color-box {
+	display: block;
+	height: 20px;
+	width: 20px;
+	border-radius: 15px;
+}
+
+
+.card-title {
+	margin-left: -10px;
+	margin-top:-15px;
+	font-weight: 400;
+	.title-text {
+		font-size: 20px
+	}
+	.title-extra{
+		position: absolute;
+		top:12px;
+		right:21px;
+		
+	}
+}
+
+.color-picker-wrapper {
+	display: inline-block;
+	border-radius: 15px;
+	margin-left:8px;
+
+
+}
+.color-picker {
+	display: inline-block;
+	height: 15px;
+	width: 15px;
+	background-color: orange;
+	border-radius: 15px;
+}
+
+.clear-icon {
+	font-size: 18px;
+	margin-top:10px;
+	margin-left:10px;
+	cursor: pointer;
+}
+
+.email-textarea-div {
+	clear: both;
+	width: 100%;
+
+}
+
+.fn-icon {
+	font-size:25px;
+	margin-left: 10px;
+	cursor: pointer;
+
+}
+
+.tag-input-container {
+	padding: 5px;
+	background-color: white;
+	.tag-input-box {
+		border-color: transparent;
+		min-width:120px;
+	}
+	.tag-input-box:focus {
+		outline: none;
+	}
+}
+
+
+.tag-span {
+	padding-top:2px;
+	padding-right:4px;
+	display: inline-block;
+	text-decoration: underline;
+	cursor: pointer;
+
+}
+
+.ant-tag.tag-active {
+	background-color: rgb(255, 85, 0);
+	color: white;
+}
+
+.tag-error {
+	margin-left: 10px;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+
+  /* Color/shape of burger icon bars */
+  .bm-burger-bars {
+	background: #373a47;
+  }
+  
+  /* Position and sizing of clickable cross button */
+  .bm-cross-button {
+	height: 24px;
+	width: 24px;
+  }
+  
+  /* Color/shape of close button cross */
+  .bm-cross {
+	background: #bdc3c7;
+  }
+  
+  /* General sidebar styles */
+  .bm-menu {
+	background: #373a47;
+	padding: 2.5em 1.5em 0;
+	font-size: 1.15em;
+  }
+  
+  /* Morph shape necessary with bubble or elastic */
+  .bm-morph-shape {
+	fill: #373a47;
+  }
+  
+  /* Wrapper for item list */
+  .bm-item-list {
+	color: #b8b7ad;
+	padding: 0.8em;
+  }
+  
+  /* Styling of overlay */
+  .bm-overlay {
+	background: rgba(0, 0, 0, 0.3);
+  }

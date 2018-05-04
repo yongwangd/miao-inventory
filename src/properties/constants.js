@@ -1,0 +1,1 @@
+export const tagSeparator = '_<|>_';
