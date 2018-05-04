@@ -1,7 +1,6 @@
 import { connect } from "react-redux";
 import React, { Component } from "react";
 import validator from "validator";
-import R from "ramda";
 import PropTypes from "prop-types";
 import {
   Collapse,
@@ -12,7 +11,6 @@ import {
   Table,
   Menu,
   Dropdown,
-  Icon
 } from "antd";
 import LabelFieldSet from "../../../commonCmps/LabelFieldSet";
 import simpleForm from "../../../lib/simpleForm";
@@ -33,11 +31,6 @@ const validation = () => {
   return err;
 };
 
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
 
 const variantColumns = [
   {
@@ -53,9 +46,9 @@ const variantColumns = [
       const menu = (
         <Menu>
           <Menu.Item>
-            <a>In Stock</a>
-            <a>Move to Secondary Storage</a>
-            <a>Reset</a>
+            <a onClick={() => message.info("In Stock")}>In Stock</a>
+            <a onClick={() => message.info("In Move to S")}>Move to Secondary Storage</a>
+            <a >Reset</a>
           </Menu.Item>
         </Menu>
       );
@@ -189,10 +182,28 @@ class ContactItemForm extends Component {
     const renderVariants = variants => {
       console.log("render");
 
+      const getHeader = variant => (
+        <div>
+          <span className="bold">{variant.label}</span>
+          <span className="variant-header-span">
+            Primary:
+            <span>14</span>
+          </span>
+          <span className="variant-header-span">
+            Secondary:
+            <span>13</span>
+          </span>
+          <span className="variant-header-span">
+            Total:
+            <span>27</span>
+          </span>
+        </div>
+      );
+
       return (
         <Collapse bordered={false} defaultActiveKey={["1"]}>
           {variants.map(variant => (
-            <Panel key={variant.id} header={variant.label}>
+            <Panel key={variant.id} header={getHeader(variant)}>
               <Table
                 size={"small"}
                 pagination={false}

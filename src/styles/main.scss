@@ -1,6 +1,7 @@
 @import 'base';
 @import '~bootstrap/scss/bootstrap.scss';
 @import 'material-ui.scss';
+@import '_variables.scss';
 // Some best-practice CSS that's useful for most apps
 // Just remove them if they're not what you want
 html {
@@ -127,7 +128,7 @@ body {
 		position: absolute;
 		top:12px;
 		right:21px;
-		
+
 	}
 }
 
@@ -206,37 +207,52 @@ body {
   .bm-burger-bars {
 	background: #373a47;
   }
-  
+
   /* Position and sizing of clickable cross button */
   .bm-cross-button {
 	height: 24px;
 	width: 24px;
   }
-  
+
   /* Color/shape of close button cross */
   .bm-cross {
 	background: #bdc3c7;
   }
-  
+
   /* General sidebar styles */
   .bm-menu {
 	background: #373a47;
 	padding: 2.5em 1.5em 0;
 	font-size: 1.15em;
   }
-  
+
   /* Morph shape necessary with bubble or elastic */
   .bm-morph-shape {
 	fill: #373a47;
   }
-  
+
   /* Wrapper for item list */
   .bm-item-list {
 	color: #b8b7ad;
 	padding: 0.8em;
   }
-  
+
   /* Styling of overlay */
   .bm-overlay {
 	background: rgba(0, 0, 0, 0.3);
   }
+
+.variant-header-span {
+  font-weight: bold;
+  margin-left: 15px;
+  margin-right: 4px;
+  color: $gray;
+  span {
+    font-weight: normal;
+    color: black;
+  }
+}
+
+.bold {
+  font-weight: bold;
+}
