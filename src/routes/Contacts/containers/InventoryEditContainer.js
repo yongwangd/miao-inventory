@@ -81,11 +81,12 @@ const getTagArray = (tags, tagKeySet) =>
 
 class InventoryEditContainer extends React.Component {
   state = {
-    variantInEdit: null
+    variantInEdit: null,
+    vendorsEditCopy: null
   };
 
   render() {
-    const { variantInEdit } = this.state;
+    const { variantInEdit, vendorsEditCopy } = this.state;
     const { contact, variantTags, vendorTags } = this.props;
     const { variantTagKeySet } = contact;
 
@@ -161,7 +162,11 @@ class InventoryEditContainer extends React.Component {
                 size="small"
                 type="primary"
                 style={{ marginTop: 15 }}
-                onClick={() => this.setState({ variantInEdit: variant })}
+                onClick={() =>
+                  this.setState({
+                    variantInEdit: variant,
+                    vendorsEditCopy: variant.vendors
+                  })}
               >
                 Add Vendor
               </Button>
@@ -187,9 +192,16 @@ class InventoryEditContainer extends React.Component {
               visible={variantInEdit != null}
               title={"Edit Vendors"}
               onCancel={() => this.setState({ variantInEdit: false })}
+              onOk={() => {
+                updateContactVariantVendors(
+                  contact._id,
+                  variantInEdit.key,
+                  this.state.vendorsEditCopy
+                );
+              }}
             >
               <VendorTagInputContainer
-                selectedTagSet={Object.keys(variantInEdit.vendors || {})}
+                selectedTagSet={variantInEdit.vendorsEditCopy || {}}
                 onTagSetChange={keySet => {
                   console.log(keySet);
                   const diff = R.difference(
@@ -197,9 +209,15 @@ class InventoryEditContainer extends React.Component {
                     Object.keys(variantInEdit.vendors || {})
                   );
                   console.log("diff", diff);
-                  updateContactVariantVendors(contact._id, variantInEdit.key, {
-                    ...variantInEdit.vendors,
-                    ...diff.reduce((acc, cur) => ({ ...acc, [cur]: true }), {})
+
+                  this.setState({
+                    vendorsEditCopy: {
+                      ...variantInEdit.vendors,
+                      ...diff.reduce(
+                        (acc, cur) => ({ ...acc, [cur]: true }),
+                        {}
+                      )
+                    }
                   });
                 }}
                 closable={false}
