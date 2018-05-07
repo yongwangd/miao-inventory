@@ -22,6 +22,13 @@ export const updateContact = contact => {
   });
 };
 
+export const updateContactProperty = (contact, propertyName, value) => {
+  const now = moment();
+  return contactsRef.updateById(contact._id, {
+    [propertyName]: value
+  });
+};
+
 export const updateContactById = (id, contact) => {
   const now = moment();
   return contactsRef.updateById(id, {

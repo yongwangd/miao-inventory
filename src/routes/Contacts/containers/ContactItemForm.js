@@ -24,11 +24,14 @@ import simpleForm from "../../../lib/simpleForm";
 // import ImageViewer from "../../../commonCmps/ImageViewer";
 // import { getBusinessCardRef } from "../../../fireQuery/fireConnection";
 import createUUID from "../../../lib/uuidTool";
-import TagInputContainer, { ContactTagInputContainer } from "../containers/TagInputContainer";
+import TagInputContainer, {
+  ContactTagInputContainer
+} from "../containers/TagInputContainer";
 import { a } from "../contactUtility";
 import { actions } from "../../../store/authReducer";
 import tagsQuery from "../../../fireQuery/tagsQuery";
-import {VariantTagInputContainer} from './TagInputContainer'
+import { VariantTagInputContainer } from "./TagInputContainer";
+import EditTagService from "../services/EditTagService";
 
 const { Panel } = Collapse;
 
@@ -98,7 +101,8 @@ const variantColumns = [
     "name",
     "comment",
     // "inStock",
-    "tagKeySet"
+    "tagKeySet",
+    "variantTagKeySet"
     // "downloadURL",
     // "cardImageName"
   ],
@@ -106,7 +110,8 @@ const variantColumns = [
 })
 class ContactItemForm extends Component {
   state = {
-    uploadLoading: false
+    uploadLoading: false,
+    edittingTags: false
   };
 
   submit = async () => {
@@ -138,9 +143,10 @@ class ContactItemForm extends Component {
       onDelete,
       loading = false,
       loadingText = "Loading",
-      tagKeySet = {}
+      tagKeySet = {},
+      variantTagKeySet = {}
     } = props;
-    const { uploadLoading } = this.state;
+    const { uploadLoading, edittingTags } = this.state;
 
     const fieldArray = ["name"];
 
@@ -270,19 +276,47 @@ class ContactItemForm extends Component {
           >
             <div style={{ borderBottom: "1px solid lightgray" }}>
               <ContactTagInputContainer
-
-                // tagQuery={tagsQuery("variant")}
-                selectedTagSet={tagKeySet.value}
-                onTagSetChange={keySet => tagKeySet.onChange(undefined, keySet)}
-              />
-              <VariantTagInputContainer
-
                 // tagQuery={tagsQuery("variant")}
                 selectedTagSet={tagKeySet.value}
                 onTagSetChange={keySet => tagKeySet.onChange(undefined, keySet)}
               />
             </div>
           </LabelFieldSet>
+
+          <LabelFieldSet
+            label="VariantTags"
+            err={
+              (hasSubmitted || variantTagKeySet.touched) &&
+              variantTagKeySet.error
+            }
+          >
+            <div style={{ borderBottom: "1px solid lightgray" }}>
+              <VariantTagInputContainer
+                // tagQuery={tagsQuery("variant")}
+                selectedTagSet={variantTagKeySet.value}
+                onTagSetChange={keySet =>
+                  variantTagKeySet.onChange(undefined, keySet)}
+              />
+            </div>
+          </LabelFieldSet>
+
+          <Button onClick={() => this.setState({ edittingTags: true })}>
+            Edit Variant
+          </Button>
+          {edittingTags && (
+            <Modal
+              title={"Edit Variants"}  
+              visible={edittingTags}
+              onCancel={() => this.setState({ edittingTags: false })}
+            >
+              <VariantTagInputContainer
+                // tagQuery={tagsQuery("variant")}
+                selectedTagSet={variantTagKeySet.value}
+                onTagSetChange={keySet =>
+                  variantTagKeySet.onChange(undefined, keySet)}
+              />
+            </Modal>
+          )}
 
           {renderVariants(variants)}
 

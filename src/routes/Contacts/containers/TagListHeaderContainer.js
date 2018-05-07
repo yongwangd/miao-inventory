@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { Tag, Modal, Tabs, message, Icon, Popconfirm, Input } from "antd";
 import TagListHeader from "../components/TagListHeader";
 import { toggleArrayItem } from "../../../lib/littleFn";
-import {
+import tagsQuery, {
   createContactTag,
   updateContactTagById,
   deleteContactTagById
@@ -13,10 +13,11 @@ import {
 import SimpleInputButton from "../../../commonCmps/SimpleInputButton";
 import { parseTagFromLabel } from "../contactUtility";
 import TagInputContainer from "../containers/TagInputContainer";
+import { ContactTagInputContainer } from "./TagInputContainer";
 
-@connect(state => ({
-  tags: state.tagChunk.tags
-}))
+// @connect(state => ({
+//   tags: state.tagChunk.tags
+// }))
 class TagListHeaderContainer extends Component {
   state = {
     edittingTags: false,
@@ -34,10 +35,11 @@ class TagListHeaderContainer extends Component {
   };
 
   addNewTag = label => {
+    const { tagsQuery } = this.props;
     const tag = parseTagFromLabel(label);
-    return createContactTag(tag).then(() =>
-      message.success(`Tag ${tag.key} Created`)
-    );
+    return tagsQuery
+      .createTag(tag)
+      .then(() => message.success(`Tag ${tag.key} Created`));
   };
 
   newTagNameError = label => {
@@ -49,19 +51,19 @@ class TagListHeaderContainer extends Component {
   };
 
   unarchivedTag = tag => {
-    updateContactTagById(tag._id, { archived: false }).then(() =>
-      message.success(`Tag ${tag.label} restored`)
-    );
+    this.props.tagsQuery
+      .updateTagById(tag._id, { archived: false })
+      .then(() => message.success(`Tag ${tag.label} restored`));
   };
 
   archiveTag = tag => {
-    updateContactTagById(tag._id, { archived: true }).then(() =>
-      message.success(`Tag ${tag.label} archived`)
-    );
+    this.props.tagsQuery
+      .updateTagById(tag._id, { archived: true })
+      .then(() => message.success(`Tag ${tag.label} archived`));
   };
 
   updateTagParent = (tag, parentTagSet) => {
-    updateContactTagById(tag._id, { parentTagSet }).then(() => {
+    this.props.tagsQuery.updateTagById(tag._id, { parentTagSet }).then(() => {
       this.setState({ edittingSingleTag: null });
       message.success("Parent tag updated!");
     });
@@ -88,8 +90,8 @@ class TagListHeaderContainer extends Component {
   };
 
   permanentlyDeleteTag = tag => {
-    const { afterTagDelete } = this.props;
-    return deleteContactTagById(tag._id).then(() => afterTagDelete(tag));
+    const { afterTagDelete, tagsQuery } = this.props;
+    return tagsQuery.deleteTagById(tag._id).then(() => afterTagDelete(tag));
   };
 
   editErrorMsg = (oldLabel = "", newLabel = "") => {
@@ -169,9 +171,7 @@ class TagListHeaderContainer extends Component {
           Restore
         </a>
         <Popconfirm
-          title={`Are you sure permanently ${
-            tag.label
-          }? \nThe app will also delete this tag from Contacts. \nThis action is not reversable`}
+          title={`Are you sure permanently ${tag.label}? \nThe app will also delete this tag from Contacts. \nThis action is not reversable`}
           onConfirm={() => this.permanentlyDeleteTag(tag)}
           onCancel={() => {}}
           okText="Yes"
@@ -201,11 +201,10 @@ class TagListHeaderContainer extends Component {
               this.updateTagParent(
                 edittingSingleTag,
                 edittingSingleTag.parentTagSet
-              )
-            }
+              )}
           >
             <span>Parent Tag</span>
-            <TagInputContainer
+            <ContactTagInputContainer
               selectedTagSet={edittingSingleTag.parentTagSet || {}}
               onTagSetChange={keySet => {
                 // edittingSingleTag.parentTagSet = keySet;
@@ -263,3 +262,18 @@ TagListHeaderContainer.propTypes = {
 };
 
 export default TagListHeaderContainer;
+
+export const ContactTagListHeaderContainer = connect(state => ({
+  tags: state.tagChunk.tags,
+  tagsQuery: tagsQuery("contact")
+}))(TagListHeaderContainer);
+
+export const VariantTagListHeaderContainer = connect(state => ({
+  tags: state.variantTagChunk.tags,
+  tagsQuery: tagsQuery("variant")
+}))(TagListHeaderContainer);
+
+export const VendorTagListHeaderContainer = connect(state => ({
+  tags: state.vendorTagChunk.tags,
+  tagsQuery: tagsQuery("vendor")
+}))(TagListHeaderContainer);

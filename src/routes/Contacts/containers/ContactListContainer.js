@@ -14,11 +14,15 @@ import {
 import cardColors from "../../../properties/cardColors";
 import "../../../styles/bricklayer.scss";
 import ColorList from "../components/ColorList";
-import TagListHeaderContainer from "../containers/TagListHeaderContainer";
+import TagListHeaderContainer, {
+  VariantTagListHeaderContainer, VendorTagListHeaderContainer
+} from "../containers/TagListHeaderContainer";
 import columns from "../../../properties/contactColumns";
 import EventLogContainer from "../../EventLog/components/EventLogContainer";
 import ContactList from "../components/ContactList";
 import contactColumns from "../../../properties/contactColumns";
+import { ContactTagInputContainer } from "./TagInputContainer";
+import { ContactTagListHeaderContainer } from "./TagListHeaderContainer";
 
 @connect(state => ({
   contacts: state.contactChunk.contacts,
@@ -273,13 +277,26 @@ class ContactListContainer extends Component {
             Log</Tag> */}
           <div style={{ width: "100%", marginBottom: 10 }}>
             <Tag color="pink">{visibleContacts.length} Contacts</Tag>
-            <TagListHeaderContainer
+            <ContactTagListHeaderContainer
               afterTagDelete={tag => deleteTagFromContacts(tag)}
               activeTagKeys={activeTagKeys}
               onActiveTagsChange={keys =>
-                this.setState({ activeTagKeys: keys })
-              }
-              tags={tags}
+                this.setState({ activeTagKeys: keys })}
+              // tags={tags}
+            />
+            <VariantTagListHeaderContainer
+              afterTagDelete={tag => deleteTagFromContacts(tag)}
+              activeTagKeys={activeTagKeys}
+              onActiveTagsChange={keys =>
+                this.setState({ activeTagKeys: keys })}
+              // tags={tags}
+            />
+            <VendorTagListHeaderContainer
+              afterTagDelete={tag => deleteTagFromContacts(tag)}
+              activeTagKeys={activeTagKeys}
+              onActiveTagsChange={keys =>
+                this.setState({ activeTagKeys: keys })}
+              // tags={tags}
             />
           </div>
           {showEmailTextArea ? (
@@ -434,6 +451,7 @@ class ContactListContainer extends Component {
                 showDelete
                 onDelete={deleteContact}
                 initData={contactInEdit}
+                contact={contactInEdit}
               />
             </Modal>
           )}

@@ -17,7 +17,8 @@ const TagListHeader = props => {
       >
         {tag.label}
       </Tag>
-      <span onClick={() => editTag(tag)}>Edit</span>
+      {/*     <span onClick={() => editTag(tag)}>Edit</span>
+*/}
     </span>
   );
 

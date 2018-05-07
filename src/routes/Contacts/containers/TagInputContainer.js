@@ -91,3 +91,8 @@ export const VariantTagInputContainer = connect(state => ({
   tags: state.variantTagChunk.tags,
   tagQuery: tagsQuery("variant")
 }))(TagInputContainer);
+
+export const VendorTagInputContainer = connect(state => ({
+  tags: state.vendorTagChunk.tags,
+  tagQuery: tagsQuery("vendor")
+}))(TagInputContainer);
