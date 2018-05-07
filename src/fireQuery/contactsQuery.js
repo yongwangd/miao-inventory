@@ -29,6 +29,11 @@ export const updateContactProperty = (contact, propertyName, value) => {
   });
 };
 
+export const updateContactVariantVendors = (contactId, variantKey, values) =>
+  getFireDB()
+    .ref(`contacts/${contactId}/variantTagKeySet/${variantKey}`)
+    .set(values);
+
 export const updateContactById = (id, contact) => {
   const now = moment();
   return contactsRef.updateById(id, {

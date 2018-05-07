@@ -20,12 +20,18 @@ class TagInput extends Component {
   };
 
   render() {
-    const { tags, onTagSelect, selectedTagSet = {}, onClose } = this.props;
+    const {
+      tags,
+      onTagSelect,
+      selectedTagSet = {},
+      onClose,
+      closable = true
+    } = this.props;
     const { search } = this.state;
     const { handleChange } = this;
 
     const renderTag = tag => (
-      <Tag key={tag.key} closable onClose={() => onClose(tag)}>
+      <Tag key={tag.key} closable={closable} onClose={() => onClose(tag)}>
         {tag.label}
       </Tag>
     );
@@ -37,7 +43,7 @@ class TagInput extends Component {
         )
         .map(tg => tg.label);
 
-  console.log('tag input', tags);
+    console.log("tag input", tags);
 
     return (
       <div className="tag-input-container">

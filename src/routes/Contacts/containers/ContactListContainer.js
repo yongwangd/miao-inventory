@@ -298,6 +298,8 @@ class ContactListContainer extends Component {
               // tags={tags}
             />
             <VariantTagListHeaderContainer
+              color={"orange"}
+              activeColor={"magenta"}
               afterTagDelete={tag => deleteTagFromContacts(tag)}
               activeTagKeys={activeTagKeys}
               onActiveTagsChange={keys =>
@@ -305,6 +307,8 @@ class ContactListContainer extends Component {
               // tags={tags}
             />
             <VendorTagListHeaderContainer
+              color={"purple"}
+              activeColor={"#2db7f5"}
               afterTagDelete={tag => deleteTagFromContacts(tag)}
               activeTagKeys={activeTagKeys}
               onActiveTagsChange={keys =>

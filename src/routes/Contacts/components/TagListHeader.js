@@ -3,9 +3,18 @@ import { Tag } from "antd";
 import PropTypes from "prop-types";
 
 const TagListHeader = props => {
-  const { tags, activeTagKeys, onTagClick, editTag, ...rest } = props;
+  const {
+    tags,
+    activeTagKeys,
+    onTagClick,
+    editTag,
+    activeColor = "#f50",
+    color = "blue",
+    ...rest
+  } = props;
 
-  const tagColor = tag => (activeTagKeys.includes(tag.key) ? "#f50" : "blue");
+  const tagColor = tag =>
+    (activeTagKeys.includes(tag.key) ? activeColor : color);
 
   const renderTag = tag => (
     <span>

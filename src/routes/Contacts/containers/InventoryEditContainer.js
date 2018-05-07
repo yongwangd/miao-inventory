@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import R from "ramda";
 
 import {
   Modal,
@@ -13,7 +14,11 @@ import {
   Icon
 } from "antd";
 import LabelFieldSet from "../../../commonCmps/LabelFieldSet";
-import { VariantTagInputContainer } from "./TagInputContainer";
+import {
+  VariantTagInputContainer,
+  VendorTagInputContainer
+} from "./TagInputContainer";
+import { updateContactVariantVendors } from "../../../fireQuery/contactsQuery";
 
 const { Panel } = Collapse;
 
@@ -70,19 +75,48 @@ const variantColumns = [
 
 const getTagArray = (tags, tagKeySet) =>
   Object.keys(tagKeySet).map(key => ({
-    ...tagKeySet[key],
-    ...tags.find(k => k.key == key)
+    ...tags.find(k => k.key == key),
+    value: tagKeySet[key]
   }));
 
 class InventoryEditContainer extends React.Component {
-  state = {};
+  state = {
+    variantInEdit: null
+  };
 
   render() {
+    const { variantInEdit } = this.state;
     const { contact, variantTags, vendorTags } = this.props;
     const { variantTagKeySet } = contact;
 
-    const variants = getTagArray(variantTags, variantTagKeySet);
-    console.log("variants", variants);
+    // const variants = getTagArray(variantTags, variantTagKeySet);
+    const variantArray = Object.keys(variantTagKeySet).map(key => ({
+      ...variantTags.find(k => k.key == key),
+      vendors: variantTagKeySet[key]
+    }));
+
+    console.log("variant array", variantArray);
+    // const getVendorArray = vendorKeySet =>
+    //   getTagArray(vendorTags, vendorKeySet);
+
+    const getVendorArray = vendorKeySet => {
+      if (!R.is(Object, vendorKeySet)) {
+        vendorKeySet = {};
+      }
+      return Object.keys(vendorKeySet).map(key => ({
+        ...vendorTags.find(k => k.key == key),
+        value: vendorKeySet[key].vendors
+      }));
+    };
+
+    // const getVendorArray = variantArrayItem => {
+    //   Object.keys(R.is(Object, variantArrayItem.vendors) ? variantArrayItem.vendors : {} )
+    //     .map(key => ({
+
+    //   }))
+    // }
+
+    console.log("variants", variantArray);
 
     const renderVariants = variants => {
       console.log("render");
@@ -109,23 +143,19 @@ class InventoryEditContainer extends React.Component {
 
       return (
         <Collapse bordered={false} defaultActiveKey={["1"]}>
-          {variants.map(variant => (
+          {variantArray.map(variant => (
             <Panel key={variant.id} header={getHeader(variant)}>
               <Table
                 size={"small"}
                 pagination={false}
                 columns={variantColumns}
-                dataSource={variant.vendors}
+                dataSource={getVendorArray(vendorTags, variant.vendors)}
               />
               <Button
                 size="small"
                 type="primary"
                 style={{ marginTop: 15 }}
-                onClick={() =>
-                  Modal.warning({
-                    title: "This is a warning message",
-                    content: "some messages...some messages..."
-                  })}
+                onClick={() => this.setState({ variantInEdit: variant })}
               >
                 Add Vendor
               </Button>
@@ -140,14 +170,36 @@ class InventoryEditContainer extends React.Component {
         <div>
           <LabelFieldSet label="VariantTags">
             <div style={{ borderBottom: "1px solid lightgray" }}>
-              <VariantTagInputContainer
-                // tagQuery={tagsQuery("variant")}
-                selectedTagSet={variantTagKeySet}
-              />
+              <VariantTagInputContainer selectedTagSet={variantTagKeySet} />
             </div>
           </LabelFieldSet>
 
-          {renderVariants(variants)}
+          {renderVariants(variantArray)}
+
+          {variantInEdit && (
+            <Modal
+              visible={variantInEdit != null}
+              title={"Edit Vendors"}
+              onCancel={() => this.setState({ variantInEdit: false })}
+            >
+              <VendorTagInputContainer
+                selectedTagSet={Object.keys(variantInEdit.vendors || {})}
+                onTagSetChange={keySet => {
+                  console.log(keySet);
+                  const diff = R.difference(
+                    Object.keys(keySet),
+                    Object.keys(variantInEdit.vendors || {})
+                  );
+                  console.log("diff", diff);
+                  updateContactVariantVendors(contact._id, variantInEdit.key, {
+                    ...variantInEdit.vendors,
+                    ...diff.reduce((acc, cur) => ({ ...acc, [cur]: true }), {})
+                  });
+                }}
+                closable={false}
+              />
+            </Modal>
+          )}
         </div>
       </Spin>
     );
