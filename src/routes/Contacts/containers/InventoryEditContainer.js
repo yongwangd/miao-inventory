@@ -25,14 +25,14 @@ const { Panel } = Collapse;
 const variantColumns = [
   {
     title: "Vendor",
-    dataIndex: "label",
+    dataIndex: "vendorKey",
     key: "label"
   },
   {
     title: "Primary",
     dataIndex: "primary",
     key: "primary",
-    render: (text, record) => {
+    render: (text = 0, record) => {
       const menu = (
         <div>
           <div>
@@ -96,18 +96,19 @@ class InventoryEditContainer extends React.Component {
     }));
 
     console.log("variant array", variantArray);
+    console.log("vendors", vendorTags);
     // const getVendorArray = vendorKeySet =>
     //   getTagArray(vendorTags, vendorKeySet);
 
-    const getVendorArray = vendorKeySet => {
-      if (!R.is(Object, vendorKeySet)) {
-        vendorKeySet = {};
-      }
-      return Object.keys(vendorKeySet).map(key => ({
-        ...vendorTags.find(k => k.key == key),
-        value: vendorKeySet[key].vendors
-      }));
-    };
+    // const getVendorArray = vendorKeySet => {
+    //   if (!R.is(Object, vendorKeySet)) {
+    //     vendorKeySet = {};
+    //   }
+    //   return Object.keys(vendorKeySet).map(key => ({
+    //     ...vendorTags.find(k => k.key == key),
+    //     value: vendorKeySet[key].vendors
+    //   }));
+    // };
 
     // const getVendorArray = variantArrayItem => {
     //   Object.keys(R.is(Object, variantArrayItem.vendors) ? variantArrayItem.vendors : {} )
@@ -149,7 +150,12 @@ class InventoryEditContainer extends React.Component {
                 size={"small"}
                 pagination={false}
                 columns={variantColumns}
-                dataSource={getVendorArray(vendorTags, variant.vendors)}
+                dataSource={Object.entries(
+                  variant.vendors || {}
+                ).map(([vendorKey, value]) => ({
+                  vendorKey,
+                  ...value
+                }))}
               />
               <Button
                 size="small"
