@@ -16,6 +16,7 @@ import { updateContactById } from "../../../fireQuery/contactsQuery";
 import TagList from "./TagList";
 import columns from "../../../properties/contactColumns";
 import SearchHighlight from "../../../commonCmps/SearchHighlight";
+import { stopAsyncValidation } from "redux-form";
 
 class ContactCard extends React.Component {
   constructor(props) {
@@ -35,6 +36,7 @@ class ContactCard extends React.Component {
       info,
       search,
       onEditClick,
+      onInventoryClick,
       touchOnly,
       onRevertContact,
       completelyDeleteContact,
@@ -102,7 +104,7 @@ class ContactCard extends React.Component {
       ]
     ) : (
       <span>
-        {/*<Icon style={{color: colorObj.font}} type="edit" onClick={() => onEditClick(info)}/> */}
+        {/* <Icon style={{color: colorObj.font}} type="edit" onClick={() => onEditClick(info)}/> */}
         <Popover
           placement="bottomRight"
           content={colorBox}
@@ -126,7 +128,7 @@ class ContactCard extends React.Component {
       >
         <div className="card-title">
           <div className="title-text" style={{ color: colorObj.font }}>
-            {nameTitle}
+            <span onClick={() => onInventoryClick(info)}>{nameTitle}</span>
           </div>
           <div className="title-extra">{extra}</div>
         </div>

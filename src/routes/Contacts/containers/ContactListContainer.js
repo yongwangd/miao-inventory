@@ -15,7 +15,8 @@ import cardColors from "../../../properties/cardColors";
 import "../../../styles/bricklayer.scss";
 import ColorList from "../components/ColorList";
 import TagListHeaderContainer, {
-  VariantTagListHeaderContainer, VendorTagListHeaderContainer
+  VariantTagListHeaderContainer,
+  VendorTagListHeaderContainer
 } from "../containers/TagListHeaderContainer";
 import columns from "../../../properties/contactColumns";
 import EventLogContainer from "../../EventLog/components/EventLogContainer";
@@ -23,6 +24,7 @@ import ContactList from "../components/ContactList";
 import contactColumns from "../../../properties/contactColumns";
 import { ContactTagInputContainer } from "./TagInputContainer";
 import { ContactTagListHeaderContainer } from "./TagListHeaderContainer";
+import InventoryEditContainer from "./InventoryEditContainer";
 
 @connect(state => ({
   contacts: state.contactChunk.contacts,
@@ -36,6 +38,7 @@ class ContactListContainer extends Component {
     searchKey: "",
     visible: false,
     contactInEdit: null,
+    contactInventoryInEdit: null,
     showTrafficModal: false,
     inNewMode: false,
     showEventLogModal: false,
@@ -81,6 +84,13 @@ class ContactListContainer extends Component {
     this.setState({
       contactInEdit: ct,
       inNewMode: false
+    });
+
+  openInventoryDialog = ct =>
+    this.setState({
+      contactInventoryInEdit: ct,
+      inNewMode: false,
+      contactInEdit: null
     });
 
   createNewContact = async ct => {
@@ -206,6 +216,7 @@ class ContactListContainer extends Component {
       onModalCancel,
       updateContact,
       openContactDialog,
+      openInventoryDialog,
       newContactClick,
       createNewContact,
       deleteContact,
@@ -225,6 +236,7 @@ class ContactListContainer extends Component {
     const {
       searchKey,
       contactInEdit,
+      contactInventoryInEdit,
       inNewMode,
       showEmailTextArea,
       activeColorIds,
@@ -232,7 +244,8 @@ class ContactListContainer extends Component {
       showOnlyDeleted,
       showPhoneTextArea,
       activeTagKeys,
-      showEventLogModal
+      showEventLogModal,
+      showTrafficModal
     } = this.state;
 
     const visibleContacts = contacts.filter(
@@ -417,23 +430,29 @@ class ContactListContainer extends Component {
             search={searchKey}
             contacts={visibleContacts}
             onEditClick={openContactDialog}
+            onInventoryClick={openInventoryDialog}
             onRevertContact={revertContact}
             completelyDeleteContact={completelyDeleteContact}
           />
 
-          {/* {
-          showTrafficModal &&
-          <Modal
-            title={"Traffic to Home"}
-            visible={showTrafficModal}
-            footer={null}
-            width="640"
-            onCancel={()=>this.setState({showTrafficModal: false})}
-          >
-            <iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d105883.51706200307!2d-84.35317492387183!3d33.97044007941706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x88f5a6cd50cafac7%3A0xab7849cc6cc913f3!2sehair+norcross!3m2!1d33.927147!2d-84.217669!4m5!1s0x88f574ea5a5ef381%3A0xc9e2b7a72191d06b!2s2505+Timbercreek+Circle%2C+Roswell%2C+GA!3m2!1d34.047036399999996!2d-84.3299858!5e0!3m2!1sen!2sus!4v1505239889502" width="600" height="450" frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
-          </Modal>
-
-        } */}
+          {showTrafficModal && (
+            <Modal
+              title={"Traffic to Home"}
+              visible={showTrafficModal}
+              footer={null}
+              width="640"
+              onCancel={() => this.setState({ showTrafficModal: false })}
+            >
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d105883.51706200307!2d-84.35317492387183!3d33.97044007941706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x88f5a6cd50cafac7%3A0xab7849cc6cc913f3!2sehair+norcross!3m2!1d33.927147!2d-84.217669!4m5!1s0x88f574ea5a5ef381%3A0xc9e2b7a72191d06b!2s2505+Timbercreek+Circle%2C+Roswell%2C+GA!3m2!1d34.047036399999996!2d-84.3299858!5e0!3m2!1sen!2sus!4v1505239889502"
+                width="600"
+                height="450"
+                frameBorder="0"
+                style={{ border: 0 }}
+                allowFullScreen
+              />
+            </Modal>
+          )}
 
           {contactInEdit && (
             <Modal
@@ -455,6 +474,19 @@ class ContactListContainer extends Component {
               />
             </Modal>
           )}
+
+          {contactInventoryInEdit && (
+            <Modal
+              style={{ width: 900 }}
+              title={`Edit Inventory for ${contactInventoryInEdit.name}`}
+              visible={contactInventoryInEdit != null}
+              footer={null}
+              onCancel={() => this.setState({ contactInventoryInEdit: null })}
+            >
+              <InventoryEditContainer contact={contactInventoryInEdit} />
+            </Modal>
+          )}
+
           {showEventLogModal && (
             <Modal
               visible={showEventLogModal}

@@ -31,7 +31,7 @@ import { a } from "../contactUtility";
 import { actions } from "../../../store/authReducer";
 import tagsQuery from "../../../fireQuery/tagsQuery";
 import { VariantTagInputContainer } from "./TagInputContainer";
-import EditTagService from "../services/EditTagService";
+
 
 const { Panel } = Collapse;
 
