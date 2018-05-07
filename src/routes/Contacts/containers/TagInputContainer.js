@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 import { message, Spin } from "antd";
 import R from "ramda";
 import TagInput from "../components/TagInput";
-import { createContactTag } from "../../../fireQuery/tagsQuery";
+import tagsQuery, { createContactTag } from "../../../fireQuery/tagsQuery";
 import { parseTagFromLabel } from "../contactUtility";
 
-@connect(state => ({
-  tags: state.tagChunk.tags
-}))
+// @connect(state => ({
+//   tags: state.tagChunk.tags
+// }))
 export default class TagInputContainer extends Component {
   state = {
     loading: false
@@ -25,7 +25,8 @@ export default class TagInputContainer extends Component {
   };
 
   addNewTag = label => {
-    const { onTagSetChange, selectedTagSet } = this.props;
+    const { onTagSetChange, selectedTagSet, tagQuery } = this.props;
+
     if (!label) return;
 
     const tag = parseTagFromLabel(label);
@@ -33,7 +34,8 @@ export default class TagInputContainer extends Component {
       loading: true
     });
 
-    return createContactTag(tag)
+    return tagQuery
+      .createTag(tag)
       .then(r => {
         console.log(r);
         message.success(`${label} created`);
@@ -59,7 +61,7 @@ export default class TagInputContainer extends Component {
     const { tags, ...rest } = this.props;
     const { addNewTag, onTagSelect, onClose } = this;
     const { loading } = this.state;
-    console.log('tags conainer', tags);
+    console.log("tags conainer", tags);
 
     return (
       <Spin
@@ -79,3 +81,13 @@ export default class TagInputContainer extends Component {
     );
   }
 }
+
+export const ContactTagInputContainer = connect(state => ({
+  tags: state.tagChunk.tags,
+  tagQuery: tagsQuery("contact")
+}))(TagInputContainer);
+
+export const VariantTagInputContainer = connect(state => ({
+  tags: state.variantTagChunk.tags,
+  tagQuery: tagsQuery("variant")
+}))(TagInputContainer);

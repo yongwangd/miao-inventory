@@ -1,5 +1,6 @@
 export const parseTagFromLabel = label => {
   const cleanLabel = label
+    .replace(/\W/g, "")
     .split(" ")
     .reduce((acc, cur) => acc + cur.slice(0, 1).toUpperCase() + cur.slice(1));
 

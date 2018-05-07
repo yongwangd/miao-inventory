@@ -24,9 +24,11 @@ import simpleForm from "../../../lib/simpleForm";
 // import ImageViewer from "../../../commonCmps/ImageViewer";
 // import { getBusinessCardRef } from "../../../fireQuery/fireConnection";
 import createUUID from "../../../lib/uuidTool";
-import TagInputContainer from "../containers/TagInputContainer";
+import TagInputContainer, { ContactTagInputContainer } from "../containers/TagInputContainer";
 import { a } from "../contactUtility";
 import { actions } from "../../../store/authReducer";
+import tagsQuery from "../../../fireQuery/tagsQuery";
+import {VariantTagInputContainer} from './TagInputContainer'
 
 const { Panel } = Collapse;
 
@@ -267,7 +269,15 @@ class ContactItemForm extends Component {
             err={(hasSubmitted || tagKeySet.touched) && tagKeySet.error}
           >
             <div style={{ borderBottom: "1px solid lightgray" }}>
-              <TagInputContainer
+              <ContactTagInputContainer
+
+                // tagQuery={tagsQuery("variant")}
+                selectedTagSet={tagKeySet.value}
+                onTagSetChange={keySet => tagKeySet.onChange(undefined, keySet)}
+              />
+              <VariantTagInputContainer
+
+                // tagQuery={tagsQuery("variant")}
                 selectedTagSet={tagKeySet.value}
                 onTagSetChange={keySet => tagKeySet.onChange(undefined, keySet)}
               />

@@ -1,6 +1,6 @@
 import createStore from "./createStore";
 import { contactsList } from "../fireQuery/contactsQuery";
-import { contactTagList } from "../fireQuery/tagsQuery";
+import tagsQuery from "../fireQuery/tagsQuery";
 import { getFirebase } from "../fireQuery/fireConnection";
 import { actions as authActions } from "./authReducer";
 import { actions as contactActions } from "./contactsReducer";
@@ -9,7 +9,7 @@ import { actions as tagAction } from "./tagsReducer";
 const store = createStore(window.__INITIAL_STATE__);
 
 const contactListSub = contactsList();
-const contactTagListSub = contactTagList();
+const contactTagListSub = tagsQuery("contact").tagList();
 
 // listen to user login info
 getFirebase()

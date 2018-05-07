@@ -4,12 +4,14 @@ import contactsReducer from "./contactsReducer";
 import authReducer from "./authReducer";
 import envReducer from "./envReducer";
 import tagsReducer from "./tagsReducer";
+import variantTagsReducer from "./variantTagsReducer";
 
 export const makeRootReducer = asyncReducers =>
   combineReducers({
     location: locationReducer,
     contactChunk: contactsReducer,
     tagChunk: tagsReducer,
+    variantTagChunk: variantTagsReducer,
     auth: authReducer,
     env: envReducer,
     ...asyncReducers
