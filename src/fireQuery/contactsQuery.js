@@ -44,6 +44,11 @@ export const updateContactVariants = (contactId, variants) =>
     .ref(`contacts/${contactId}/variantTagKeySet`)
     .set(variants);
 
+export const removeContactVariant = (contactId, variantKey) =>
+  getFireDB()
+    .ref(`contacts/${contactId}/variantTagKeySet/${variantKey}`)
+    .remove();
+
 export const updateContactById = (id, contact) => {
   const now = moment();
   return contactsRef.updateById(id, {

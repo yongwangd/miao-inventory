@@ -24,6 +24,8 @@ class VendorActionContainer extends React.Component {
 
     const generalParams = { contactId, variantKey, vendorKey };
 
+    const { primary = 0, secondary = 0 } = vendorInEdit;
+
     if (!vendorInEdit) {
       return <div />;
     }
@@ -36,18 +38,16 @@ class VendorActionContainer extends React.Component {
         footer={null}
       >
         {JSON.stringify(vendorInEdit)}
-        <p>Primary: {vendorInEdit.primary || 0}</p>
-        <p>Secondary: {vendorInEdit.secondary || 0}</p>
-        <p>
-          Total: {(vendorInEdit.primary || 0) + (vendorInEdit.secondary || 0)}
-        </p>
+        <p>Primary: {primary}</p>
+        <p>Secondary: {secondary}</p>
+        <p>Total: {primary + secondary}</p>
         <VendorActionItem
           onSubmit={value => {
             console.log(value);
             updateVendorQuantity({
               ...generalParams,
               type: 'primary',
-              number: vendorInEdit.primary + value
+              number: primary + value
             }).then(() =>
               message.success(`Added ${value} Items to Primary Storage`)
             );
@@ -59,7 +59,7 @@ class VendorActionContainer extends React.Component {
             updateVendorQuantity({
               ...generalParams,
               type: 'secondary',
-              number: vendorInEdit.secondary - value
+              number: secondary - value
             }).then(() =>
               message.success(`Removed ${value} from Secondary Storage`)
             )}
@@ -71,12 +71,12 @@ class VendorActionContainer extends React.Component {
               updateVendorQuantity({
                 ...generalParams,
                 type: 'primary',
-                number: vendorInEdit.primary - value
+                number: primary - value
               }),
               updateVendorQuantity({
                 ...generalParams,
                 type: 'secondary',
-                number: vendorInEdit.secondary + value
+                number: secondary + value
               })
             ]).then(() => message.success('success'))}
           text="Primary -> Secondary:"

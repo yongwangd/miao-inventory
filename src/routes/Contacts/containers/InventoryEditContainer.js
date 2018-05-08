@@ -17,7 +17,8 @@ import {
 } from './TagInputContainer';
 import {
   updateContactVariantVendors,
-  updateContactVariants
+  updateContactVariants,
+  removeContactVariant
 } from '../../../fireQuery/contactsQuery';
 import VendorActionContainer from './VendorActionContainer';
 
@@ -94,7 +95,8 @@ class InventoryEditContainer extends React.Component {
             <Menu.Item>
               <Button
                 type="primary"
-                onClick={() => {
+                onClick={e => {
+                  e.preventDefault();
                   this.setState({
                     variantInEdit: variant,
                     vendorsEditCopy: { ...variant.vendors }
@@ -105,7 +107,20 @@ class InventoryEditContainer extends React.Component {
               </Button>
             </Menu.Item>
             <Menu.Item>
-              <Button type="danger">Remove Variant</Button>
+              <Button
+                type="danger"
+                onClick={e => {
+                  e.preventDefault();
+                  removeContactVariant(
+                    contact._id,
+                    variantInEdit.key
+                  ).then(() => {
+                    message.success('Variant Removed');
+                  });
+                }}
+              >
+                Remove Variant
+              </Button>
             </Menu.Item>
           </Menu>
         );
@@ -160,17 +175,7 @@ class InventoryEditContainer extends React.Component {
       return (
         <Collapse bordered={false} defaultActiveKey={['1']}>
           {variantArray.length == 0 && <p>No Variants</p>}
-          <Button
-            size="small"
-            type="primary"
-            onClick={() =>
-              this.setState({
-                addingVariants: true,
-                variantsEditCopy: { ...(variantTagKeySet || {}) }
-              })}
-          >
-            Add Variants
-          </Button>
+
           {variantArray != null &&
             variantArray.length > 0 &&
             variantArray.map(variant => (
@@ -212,6 +217,19 @@ class InventoryEditContainer extends React.Component {
           </LabelFieldSet> */}
 
           {renderVariants(variantArray)}
+
+          <Button
+            type="primary"
+            size="small"
+            style={{ marginTop: 10 }}
+            onClick={() =>
+              this.setState({
+                addingVariants: true,
+                variantsEditCopy: { ...(variantTagKeySet || {}) }
+              })}
+          >
+            Add Variants
+          </Button>
 
           {vendorInEdit && (
             <VendorActionContainer
@@ -260,7 +278,6 @@ class InventoryEditContainer extends React.Component {
               />
             </Modal>
           )}
-          {JSON.stringify(variantsEditCopy)}
           {addingVariants && (
             <Modal
               visible={addingVariants}
@@ -284,7 +301,7 @@ class InventoryEditContainer extends React.Component {
                 selectedTagSet={variantsEditCopy}
                 onTagSetChange={keySet => {
                   const diff = R.pickBy(
-                    (val, key) => !R.has(key, variantTagKeySet),
+                    (val, key) => !R.has(key, variantTagKeySet || {}),
                     keySet
                   );
                   this.setState({

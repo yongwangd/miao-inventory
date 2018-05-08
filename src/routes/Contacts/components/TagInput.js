@@ -43,8 +43,6 @@ class TagInput extends Component {
         )
         .map(tg => tg.label);
 
-    console.log('tag input', tags);
-
     return (
       <div className="tag-input-container">
         {Object.keys(selectedTagSet)

@@ -1,19 +1,19 @@
-import React, { Component } from "react";
-import R from "ramda";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { Tag, Modal, Tabs, message, Icon, Popconfirm, Input } from "antd";
-import TagListHeader from "../components/TagListHeader";
-import { toggleArrayItem } from "../../../lib/littleFn";
+import React, { Component } from 'react';
+import R from 'ramda';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Tag, Modal, Tabs, message, Icon, Popconfirm, Input } from 'antd';
+import TagListHeader from '../components/TagListHeader';
+import { toggleArrayItem } from '../../../lib/littleFn';
 import tagsQuery, {
   createContactTag,
   updateContactTagById,
   deleteContactTagById
-} from "../../../fireQuery/tagsQuery";
-import SimpleInputButton from "../../../commonCmps/SimpleInputButton";
-import { parseTagFromLabel } from "../contactUtility";
-import TagInputContainer from "../containers/TagInputContainer";
-import { ContactTagInputContainer } from "./TagInputContainer";
+} from '../../../fireQuery/tagsQuery';
+import SimpleInputButton from '../../../commonCmps/SimpleInputButton';
+import { parseTagFromLabel } from '../contactUtility';
+import TagInputContainer from '../containers/TagInputContainer';
+import { ContactTagInputContainer } from './TagInputContainer';
 
 // @connect(state => ({
 //   tags: state.tagChunk.tags
@@ -22,7 +22,7 @@ class TagListHeaderContainer extends Component {
   state = {
     edittingTags: false,
     edittingSingleTag: false,
-    newTagName: ""
+    newTagName: ''
   };
 
   onTagClick = tag => {
@@ -44,10 +44,10 @@ class TagListHeaderContainer extends Component {
 
   newTagNameError = label => {
     const { tags } = this.props;
-    if (tags.find(tg => (tg.label || "").trim() === label.trim())) {
-      return "Existed!";
+    if (tags.find(tg => (tg.label || '').trim() === label.trim())) {
+      return 'Existed!';
     }
-    return "";
+    return '';
   };
 
   unarchivedTag = tag => {
@@ -65,7 +65,7 @@ class TagListHeaderContainer extends Component {
   updateTagParent = (tag, parentTagSet) => {
     this.props.tagsQuery.updateTagById(tag._id, { parentTagSet }).then(() => {
       this.setState({ edittingSingleTag: null });
-      message.success("Parent tag updated!");
+      message.success('Parent tag updated!');
     });
   };
 
@@ -76,7 +76,7 @@ class TagListHeaderContainer extends Component {
     });
 
   handleKeyPress = e => {
-    if (e.key !== "Enter") return;
+    if (e.key !== 'Enter') return;
     const { tagInEdit, tempLabel } = this.state;
     if (this.editErrorMsg(tagInEdit.label, tempLabel) != null) return;
 
@@ -84,7 +84,7 @@ class TagListHeaderContainer extends Component {
       message.success(`Tag ${tagInEdit.label} changed to ${tempLabel}`);
       this.setState({
         tagInEdit: null,
-        tempLabel: ""
+        tempLabel: ''
       });
     });
   };
@@ -94,19 +94,24 @@ class TagListHeaderContainer extends Component {
     return tagsQuery.deleteTagById(tag._id).then(() => afterTagDelete(tag));
   };
 
-  editErrorMsg = (oldLabel = "", newLabel = "") => {
+  editErrorMsg = (oldLabel = '', newLabel = '') => {
     const { tags } = this.props;
-    if (!newLabel.trim()) return "Cannot be blank";
-    if (oldLabel.trim() === newLabel.trim()) return "";
+    if (!newLabel.trim()) return 'Cannot be blank';
+    if (oldLabel.trim() === newLabel.trim()) return '';
 
-    if (tags.find(tg => (tg.label || "").trim() === newLabel.trim())) {
-      return "Existed!";
+    if (tags.find(tg => (tg.label || '').trim() === newLabel.trim())) {
+      return 'Existed!';
     }
     return null;
   };
 
   render() {
-    const { onActiveTagsChange, tags, ...rest } = this.props;
+    const {
+      manageTagsText = 'Manage Tags',
+      onActiveTagsChange,
+      tags,
+      ...rest
+    } = this.props;
     const {
       edittingTags,
       tagInEdit,
@@ -136,7 +141,7 @@ class TagListHeaderContainer extends Component {
                 style={{ width: 120 }}
                 suffix={
                   editErrorMsg(tag.label, tempLabel) == null && (
-                    <Icon type="check" style={{ color: "green" }} />
+                    <Icon type="check" style={{ color: 'green' }} />
                   )
                 }
               />,
@@ -191,7 +196,7 @@ class TagListHeaderContainer extends Component {
           editTag={this.editSingleTag}
         />
         <Tag onClick={() => this.setState({ edittingTags: true })}>
-          Manage Tags
+          {manageTagsText}
         </Tag>
         {edittingSingleTag && (
           <Modal
@@ -217,12 +222,12 @@ class TagListHeaderContainer extends Component {
 
                 this.setState(
                   R.assocPath(
-                    ["edittingSingleTag", "parentTagSet"],
+                    ['edittingSingleTag', 'parentTagSet'],
                     keySet,
                     this.state
                   )
                 );
-                console.log("new keyset", keySet);
+                console.log('new keyset', keySet);
               }}
             />
           </Modal>
@@ -265,15 +270,17 @@ export default TagListHeaderContainer;
 
 export const ContactTagListHeaderContainer = connect(state => ({
   tags: state.tagChunk.tags,
-  tagsQuery: tagsQuery("contact")
+  tagsQuery: tagsQuery('contact')
 }))(TagListHeaderContainer);
 
 export const VariantTagListHeaderContainer = connect(state => ({
   tags: state.variantTagChunk.tags,
-  tagsQuery: tagsQuery("variant")
+  tagsQuery: tagsQuery('variant'),
+  manageTagsText: 'Manage Variant Tags'
 }))(TagListHeaderContainer);
 
 export const VendorTagListHeaderContainer = connect(state => ({
   tags: state.vendorTagChunk.tags,
-  tagsQuery: tagsQuery("vendor")
+  tagsQuery: tagsQuery('vendor'),
+  manageTagsText: 'Manage Vendor Tags'
 }))(TagListHeaderContainer);

@@ -297,6 +297,7 @@ class ContactListContainer extends Component {
                 this.setState({ activeTagKeys: keys })}
               // tags={tags}
             />
+            <div />
             <VariantTagListHeaderContainer
               color={'orange'}
               activeColor={'magenta'}
@@ -306,6 +307,7 @@ class ContactListContainer extends Component {
                 this.setState({ activeTagKeys: keys })}
               // tags={tags}
             />
+            <div />
             <VendorTagListHeaderContainer
               color={'purple'}
               activeColor={'#2db7f5'}
