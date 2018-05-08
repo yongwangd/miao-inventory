@@ -8,8 +8,8 @@ const VendorActionItem = props => {
     <div style={{ display: 'flex' }}>
       <div style={{ flex: 1 }}>{text}</div>
       <div>
-        <Input />
-        <Button>OK</Button>
+        <InputNumber style={{ width: 100, marginRight: 15 }} />
+        <Button type="primary">OK</Button>
       </div>
     </div>
   );

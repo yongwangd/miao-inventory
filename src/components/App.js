@@ -1,16 +1,18 @@
-import React from "react";
-import "babel-polyfill";
-import { browserHistory, Router, Route, IndexRoute } from "react-router";
-import { Provider } from "react-redux";
-import PropTypes from "prop-types";
-import HomeView from "../routes/Home/components/HomeView";
-import LoginView from "../routes/Login/LoginView";
-import ContactsView from "../routes/Contacts/ContactsView";
-import EventLogView from "../routes/EventLog/EventLogView";
-import EnsureLoginContainer from "../routes/EnsureLoginContainer/EnsureLoginContainer";
-import PageLayout from "../layouts/PageLayout";
-import $ from "jquery";
-import { actions } from "../store/envReducer";
+import React from 'react';
+import 'babel-polyfill';
+import { browserHistory, Router, Route, IndexRoute } from 'react-router';
+import { Provider } from 'react-redux';
+import PropTypes from 'prop-types';
+import HomeView from '../routes/Home/components/HomeView';
+import LoginView from '../routes/Login/LoginView';
+import ContactsView from '../routes/Contacts/ContactsView';
+import EventLogView from '../routes/EventLog/EventLogView';
+import EnsureLoginContainer from '../routes/EnsureLoginContainer/EnsureLoginContainer';
+import PageLayout from '../layouts/PageLayout';
+import $ from 'jquery';
+import { actions } from '../store/envReducer';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 class App extends React.Component {
   static propTypes = {
@@ -19,22 +21,22 @@ class App extends React.Component {
 
   componentDidMount() {
     const { store } = this.props;
-    console.log("app has mounted", $, $("body"));
-    const $body = $("body");
+    console.log('app has mounted', $, $('body'));
+    const $body = $('body');
     var detectMouse = function(e) {
       let touchOnly = true;
 
-      if (e.type === "mousedown") {
+      if (e.type === 'mousedown') {
         touchOnly = false;
-      } else if (e.type === "touchstart") {
+      } else if (e.type === 'touchstart') {
         touchOnly = true;
       }
       // remove event bindings, so it only runs once
       store.dispatch(actions.setTouchOnly(touchOnly));
-      $body.off("mousedown touchstart", detectMouse);
+      $body.off('mousedown touchstart', detectMouse);
     };
     // attach both events to body
-    $body.on("mousedown touchstart", detectMouse);
+    $body.on('mousedown touchstart', detectMouse);
   }
 
   shouldComponentUpdate() {
@@ -44,7 +46,7 @@ class App extends React.Component {
   render() {
     return (
       <Provider store={this.props.store}>
-        <div style={{ height: "100%" }}>
+        <div style={{ height: '100%' }}>
           <Router history={browserHistory}>
             <Route path="/" component={PageLayout}>
               <Route path="home" component={HomeView} />

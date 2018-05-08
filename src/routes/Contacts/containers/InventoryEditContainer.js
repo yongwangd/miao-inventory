@@ -25,74 +25,35 @@ import SimpleInputWrapper from '../../../commonCmps/SimpleInputWrapper';
 import VendorActionItem from '../components/VendorActionItem';
 
 const { Panel } = Collapse;
-const { Option } = Select;
 
-const variantColumns = [
+const tableColumns = [
   {
-    title: 'Vendor',
-    dataIndex: 'vendorKey',
-    key: 'label'
+    key: 'label',
+    label: 'Vendor',
+    dataIndex: 'vendorKey'
   },
   {
-    title: 'Primary',
-    dataIndex: 'primary',
     key: 'primary',
-    render: (text = 0, record) => {
-      const menu = (
-        <div>
-          <div>
-            <a onClick={() => message.info('In Stock')}>New Arrivals: </a>
-            <InputNumber min={0} defaultValue={0} />
-          </div>
-
-          <a onClick={() => message.info('In Move to S')}>
-            Move to Secondary Storage
-          </a>
-          <a>Reset</a>
-        </div>
-      );
-      return (
-        <Popover content={menu} title="Actions">
-          <a className="ant-dropdown-link" style={{ color: 'blue' }}>
-            {text}
-          </a>
-          <VendorActionItem></VendorActionItem>
-        </Popover>
-      );
-    }
+    label: 'Primary',
+    dataIndex: 'primary'
   },
   {
-    title: 'Secondary',
-    dataIndex: 'secondary',
-    key: 'secondary'
-  },
-  {
-    title: 'Actions',
-    key: 'action',
-    render: (text, record) => (
-      <span>
-        <a>
-          <Icon type="close" />
-        </a>
-      </span>
-    )
+    key: 'secondary',
+    label: 'Secondary',
+    dataIndex: 'Secondary'
   }
 ];
-
-const getTagArray = (tags, tagKeySet) =>
-  Object.keys(tagKeySet).map(key => ({
-    ...tags.find(k => k.key == key),
-    value: tagKeySet[key]
-  }));
 
 class InventoryEditContainer extends React.Component {
   state = {
     variantInEdit: null,
-    vendorsEditCopy: null
+    vendorsEditCopy: null,
+    vendorInEdit: null,
+    vendorInEditVariant: null
   };
 
   render() {
-    const { variantInEdit, vendorsEditCopy } = this.state;
+    const { variantInEdit, vendorsEditCopy, vendorInEdit } = this.state;
     const { contact, variantTags, vendorTags } = this.props;
     const { variantTagKeySet } = contact;
 
@@ -129,22 +90,52 @@ class InventoryEditContainer extends React.Component {
         </div>
       );
 
+      const renderVendor = (vendor, variant) => (
+        <tr>
+          {tableColumns.map(col => (
+            <td key={col.key}>{vendor[col.dataIndex] || '0'}</td>
+          ))}
+          <td>
+            <a
+              href="javascript:;"
+              onClick={() =>
+                this.setState({
+                  vendorInEdit: vendor,
+                  vendorInEditVariant: variant
+                })}
+            >
+              Edit
+            </a>
+          </td>
+        </tr>
+      );
+
       return (
         <Collapse bordered={false} defaultActiveKey={['1']}>
           {variantArray.map(variant => (
             <Panel key={variant.id} header={getHeader(variant)}>
               {JSON.stringify(variant)}
-              <Table
-                size={'small'}
-                pagination={false}
-                columns={variantColumns}
-                dataSource={Object.entries(
-                  variant.vendors || {}
-                ).map(([vendorKey, value]) => ({
-                  vendorKey,
-                  ...value
-                }))}
-              />
+              <table className="table table-hover table-sm ">
+                <thead>
+                  <tr>
+                    {tableColumns.map(col => (
+                      <th scope="col" key={col.key}>
+                        {col.label}
+                      </th>
+                    ))}
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(variant.vendors || {})
+                    .map(([vendorKey, value]) => ({
+                      vendorKey,
+                      ...value
+                    }))
+                    .map(vendor => renderVendor(vendor, variant))}
+                </tbody>
+              </table>
+
               <Button
                 size="small"
                 type="primary"
@@ -182,11 +173,28 @@ class InventoryEditContainer extends React.Component {
 
           {renderVariants(variantArray)}
 
+          {vendorInEdit && (
+            <Modal
+              visible={vendorInEdit != null}
+              title={`Edit Inventory for ${vendorInEdit.vendorKey}`}
+              onCancel={() => this.setState({ vendorInEdit: null })}
+              footer={null}
+            >
+              {JSON.stringify(vendorInEdit)}
+              <VendorActionItem text="Add -> Primary:" />
+              <VendorActionItem text="Remove <- Secondary" />
+              <VendorActionItem text="Primary -> Secondary:" />
+              <VendorActionItem text="Secondary -> Primary:" />
+              <VendorActionItem text="Reset Primary to:" />
+              <VendorActionItem text="Reset Secondary to:" />
+            </Modal>
+          )}
+
           {variantInEdit && (
             <Modal
               visible={variantInEdit != null}
               title={'Edit Vendors'}
-              onCancel={() => this.setState({ variantInEdit: false })}
+              onCancel={() => this.setState({ variantInEdit: null })}
               onOk={() => {
                 updateContactVariantVendors(
                   contact._id,
