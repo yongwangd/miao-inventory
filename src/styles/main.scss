@@ -260,3 +260,17 @@ a {
 .bold {
   font-weight: bold;
 }
+
+.vendor-header-p {
+  padding-bottom: 15px;
+
+  a {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  span {
+    font-size: 18px;
+    margin-left: 15px;
+    margin-right: 25px;
+  }
+}

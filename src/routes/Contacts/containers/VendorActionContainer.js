@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, message, Popconfirm, Button } from 'antd';
+import { Modal, message, Popconfirm, Button, Badge, Tag } from 'antd';
 import R from 'ramda';
 import VendorActionItem from '../components/VendorActionItem';
 import {
@@ -25,6 +25,7 @@ class VendorActionContainer extends React.Component {
     const generalParams = { contactId, variantKey, vendorKey };
 
     const { primary = 0, secondary = 0 } = vendorInEdit;
+    const total = primary + secondary;
 
     if (!vendorInEdit) {
       return <div />;
@@ -37,10 +38,14 @@ class VendorActionContainer extends React.Component {
         onCancel={onCancel}
         footer={null}
       >
-        {JSON.stringify(vendorInEdit)}
-        <p>Primary: {primary}</p>
-        <p>Secondary: {secondary}</p>
-        <p>Total: {primary + secondary}</p>
+        <p className="vendor-header-p">
+          <a>Primary:</a>
+          <span className="badge badge-danger">{primary}</span>
+          <a>Secondary:</a>
+          <span className="badge badge-danger">{secondary}</span>
+          <a>Total:</a>
+          <span className="badge badge-danger">{total}</span>
+        </p>
         <VendorActionItem
           onSubmit={value => {
             console.log(value);
@@ -88,11 +93,20 @@ class VendorActionContainer extends React.Component {
               ...generalParams,
               type: 'primary',
               number: value
-            }).then(() => message.success('reset'))}
+            }).then(() => message.success(`Primary Storage Reset To ${value}`))}
           text="Reset Primary to:"
         />
-        <VendorActionItem text="Reset Secondary to:" />
-
+        <VendorActionItem
+          onSubmit={value =>
+            updateVendorQuantity({
+              ...generalParams,
+              type: 'secondary',
+              number: value
+            }).then(() =>
+              message.success(`Secondary Storage Reset to ${value}`)
+            )}
+          text="Reset Secondary to:"
+        />
         <Popconfirm
           title="Are you sure to Remove this Vendor?"
           onConfirm={() => {
