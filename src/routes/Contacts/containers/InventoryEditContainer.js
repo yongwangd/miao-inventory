@@ -1,6 +1,6 @@
-import React from "react";
-import { connect } from "react-redux";
-import R from "ramda";
+import React from 'react';
+import { connect } from 'react-redux';
+import R from 'ramda';
 
 import {
   Modal,
@@ -11,36 +11,41 @@ import {
   InputNumber,
   Popover,
   message,
-  Icon
-} from "antd";
-import LabelFieldSet from "../../../commonCmps/LabelFieldSet";
-import {
+  Icon,
+  Select,
+  Input
+} from 'antd';
+import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
+import TagInputContainer, {
   VariantTagInputContainer,
   VendorTagInputContainer
-} from "./TagInputContainer";
-import { updateContactVariantVendors } from "../../../fireQuery/contactsQuery";
+} from './TagInputContainer';
+import { updateContactVariantVendors } from '../../../fireQuery/contactsQuery';
+import SimpleInputWrapper from '../../../commonCmps/SimpleInputWrapper';
+import VendorActionItem from '../components/VendorActionItem';
 
 const { Panel } = Collapse;
+const { Option } = Select;
 
 const variantColumns = [
   {
-    title: "Vendor",
-    dataIndex: "vendorKey",
-    key: "label"
+    title: 'Vendor',
+    dataIndex: 'vendorKey',
+    key: 'label'
   },
   {
-    title: "Primary",
-    dataIndex: "primary",
-    key: "primary",
+    title: 'Primary',
+    dataIndex: 'primary',
+    key: 'primary',
     render: (text = 0, record) => {
       const menu = (
         <div>
           <div>
-            <a onClick={() => message.info("In Stock")}>New Arrivals: </a>
+            <a onClick={() => message.info('In Stock')}>New Arrivals: </a>
             <InputNumber min={0} defaultValue={0} />
           </div>
 
-          <a onClick={() => message.info("In Move to S")}>
+          <a onClick={() => message.info('In Move to S')}>
             Move to Secondary Storage
           </a>
           <a>Reset</a>
@@ -48,21 +53,22 @@ const variantColumns = [
       );
       return (
         <Popover content={menu} title="Actions">
-          <a className="ant-dropdown-link" style={{ color: "blue" }}>
+          <a className="ant-dropdown-link" style={{ color: 'blue' }}>
             {text}
           </a>
+          <VendorActionItem></VendorActionItem>
         </Popover>
       );
     }
   },
   {
-    title: "Secondary",
-    dataIndex: "secondary",
-    key: "secondary"
+    title: 'Secondary',
+    dataIndex: 'secondary',
+    key: 'secondary'
   },
   {
-    title: "Actions",
-    key: "action",
+    title: 'Actions',
+    key: 'action',
     render: (text, record) => (
       <span>
         <a>
@@ -96,37 +102,17 @@ class InventoryEditContainer extends React.Component {
       vendors: variantTagKeySet[key]
     }));
 
-    console.log("variant array", variantArray);
-    console.log("vendors", vendorTags);
-    // const getVendorArray = vendorKeySet =>
-    //   getTagArray(vendorTags, vendorKeySet);
-
-    // const getVendorArray = vendorKeySet => {
-    //   if (!R.is(Object, vendorKeySet)) {
-    //     vendorKeySet = {};
-    //   }
-    //   return Object.keys(vendorKeySet).map(key => ({
-    //     ...vendorTags.find(k => k.key == key),
-    //     value: vendorKeySet[key].vendors
-    //   }));
-    // };
-
-    // const getVendorArray = variantArrayItem => {
-    //   Object.keys(R.is(Object, variantArrayItem.vendors) ? variantArrayItem.vendors : {} )
-    //     .map(key => ({
-
-    //   }))
-    // }
-
-    console.log("variants", variantArray);
+    console.log('variant array', variantArray);
+    console.log('vendors', vendorTags);
+    console.log('variants', variantArray);
 
     const renderVariants = variants => {
-      console.log("render");
+      console.log('render');
 
       const getHeader = variant => (
         <div>
           <span>{variant.label}</span>
-          <span style={{ float: "right" }}>
+          <span style={{ float: 'right' }}>
             <span className="variant-header-span">
               Primary:
               <span>14</span>
@@ -144,11 +130,12 @@ class InventoryEditContainer extends React.Component {
       );
 
       return (
-        <Collapse bordered={false} defaultActiveKey={["1"]}>
+        <Collapse bordered={false} defaultActiveKey={['1']}>
           {variantArray.map(variant => (
             <Panel key={variant.id} header={getHeader(variant)}>
+              {JSON.stringify(variant)}
               <Table
-                size={"small"}
+                size={'small'}
                 pagination={false}
                 columns={variantColumns}
                 dataSource={Object.entries(
@@ -162,14 +149,22 @@ class InventoryEditContainer extends React.Component {
                 size="small"
                 type="primary"
                 style={{ marginTop: 15 }}
-                onClick={() =>
+                onClick={() => {
+                  console.log('variant in click', variant);
                   this.setState({
                     variantInEdit: variant,
-                    vendorsEditCopy: variant.vendors
-                  })}
+                    vendorsEditCopy: { ...variant.vendors }
+                  });
+                }}
               >
                 Add Vendor
               </Button>
+              <SimpleInputWrapper
+                text={'Add Vendor'}
+                onSubmit={() => console.log('submit')}
+              >
+                <VendorTagInputContainer />
+              </SimpleInputWrapper>
             </Panel>
           ))}
         </Collapse>
@@ -180,7 +175,7 @@ class InventoryEditContainer extends React.Component {
       <Spin spinning={false}>
         <div>
           <LabelFieldSet label="VariantTags">
-            <div style={{ borderBottom: "1px solid lightgray" }}>
+            <div style={{ borderBottom: '1px solid lightgray' }}>
               <VariantTagInputContainer selectedTagSet={variantTagKeySet} />
             </div>
           </LabelFieldSet>
@@ -190,7 +185,7 @@ class InventoryEditContainer extends React.Component {
           {variantInEdit && (
             <Modal
               visible={variantInEdit != null}
-              title={"Edit Vendors"}
+              title={'Edit Vendors'}
               onCancel={() => this.setState({ variantInEdit: false })}
               onOk={() => {
                 updateContactVariantVendors(
@@ -198,25 +193,23 @@ class InventoryEditContainer extends React.Component {
                   variantInEdit.key,
                   this.state.vendorsEditCopy
                 );
+                this.setState({
+                  vendorsEditCopy: null,
+                  variantInEdit: null
+                });
               }}
             >
               <VendorTagInputContainer
-                selectedTagSet={variantInEdit.vendorsEditCopy || {}}
+                selectedTagSet={vendorsEditCopy}
                 onTagSetChange={keySet => {
-                  console.log(keySet);
-                  const diff = R.difference(
-                    Object.keys(keySet),
-                    Object.keys(variantInEdit.vendors || {})
+                  const diff = R.pickBy(
+                    (val, key) => !R.has(key, variantInEdit.vendors),
+                    keySet
                   );
-                  console.log("diff", diff);
-
                   this.setState({
                     vendorsEditCopy: {
                       ...variantInEdit.vendors,
-                      ...diff.reduce(
-                        (acc, cur) => ({ ...acc, [cur]: true }),
-                        {}
-                      )
+                      ...diff
                     }
                   });
                 }}
@@ -230,7 +223,8 @@ class InventoryEditContainer extends React.Component {
   }
 }
 
-export default connect(state => ({
+export default connect((state, ownProps) => ({
   variantTags: state.variantTagChunk.tags,
-  vendorTags: state.vendorTagChunk.tags
+  vendorTags: state.vendorTagChunk.tags,
+  contact: state.contactChunk.contacts.find(c => c._id == ownProps.contactId)
 }))(InventoryEditContainer);

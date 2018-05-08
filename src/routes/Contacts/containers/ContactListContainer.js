@@ -1,30 +1,30 @@
-import { connect } from "react-redux";
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Tag, Input, Modal, Button, message, Icon, Tooltip, Spin } from "antd";
-import R from "ramda";
-import { propContains, toggleArrayItem } from "../../../lib/littleFn";
-import { getBusinessCardRef } from "../../../fireQuery/fireConnection";
-import ContactItemForm from "./ContactItemForm";
+import { connect } from 'react-redux';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Tag, Input, Modal, Button, message, Icon, Tooltip, Spin } from 'antd';
+import R from 'ramda';
+import { propContains, toggleArrayItem } from '../../../lib/littleFn';
+import { getBusinessCardRef } from '../../../fireQuery/fireConnection';
+import ContactItemForm from './ContactItemForm';
 import {
   createContact,
   updateContactById,
   deleteContactById
-} from "../../../fireQuery/contactsQuery";
-import cardColors from "../../../properties/cardColors";
-import "../../../styles/bricklayer.scss";
-import ColorList from "../components/ColorList";
+} from '../../../fireQuery/contactsQuery';
+import cardColors from '../../../properties/cardColors';
+import '../../../styles/bricklayer.scss';
+import ColorList from '../components/ColorList';
 import TagListHeaderContainer, {
   VariantTagListHeaderContainer,
   VendorTagListHeaderContainer
-} from "../containers/TagListHeaderContainer";
-import columns from "../../../properties/contactColumns";
-import EventLogContainer from "../../EventLog/components/EventLogContainer";
-import ContactList from "../components/ContactList";
-import contactColumns from "../../../properties/contactColumns";
-import { ContactTagInputContainer } from "./TagInputContainer";
-import { ContactTagListHeaderContainer } from "./TagListHeaderContainer";
-import InventoryEditContainer from "./InventoryEditContainer";
+} from '../containers/TagListHeaderContainer';
+import columns from '../../../properties/contactColumns';
+import EventLogContainer from '../../EventLog/components/EventLogContainer';
+import ContactList from '../components/ContactList';
+import contactColumns from '../../../properties/contactColumns';
+import { ContactTagInputContainer } from './TagInputContainer';
+import { ContactTagListHeaderContainer } from './TagListHeaderContainer';
+import InventoryEditContainer from './InventoryEditContainer';
 
 @connect(state => ({
   contacts: state.contactChunk.contacts,
@@ -35,7 +35,7 @@ import InventoryEditContainer from "./InventoryEditContainer";
 }))
 class ContactListContainer extends Component {
   state = {
-    searchKey: "",
+    searchKey: '',
     visible: false,
     contactInEdit: null,
     contactInventoryInEdit: null,
@@ -71,7 +71,7 @@ class ContactListContainer extends Component {
     this.setState({ modalLoading: true });
     const { _id } = this.state.contactInEdit;
     await updateContactById(_id, contact);
-    message.success("Contact Updated");
+    message.success('Contact Updated');
 
     this.setState({
       contactInEdit: null,
@@ -107,21 +107,21 @@ class ContactListContainer extends Component {
 
     const addDownloadUrl = R.when(
       R.always(downloadURL),
-      R.assoc("downloadUrl", downloadURL)
+      R.assoc('downloadUrl', downloadURL)
     );
 
     const addColor = R.when(
       R.always(R.length(activeColorIds) === 1),
-      R.assoc("color", R.head(activeColorIds))
+      R.assoc('color', R.head(activeColorIds))
     );
 
     const addTags = R.when(
       R.both(
         R.always(R.length(activeTagKeys) > 0),
-        R.compose(R.either(R.isNil, R.isEmpty), R.prop("tagKeySet"))
+        R.compose(R.either(R.isNil, R.isEmpty), R.prop('tagKeySet'))
       ),
       R.assoc(
-        "tagKeySet",
+        'tagKeySet',
         R.reduce((acc, cur) => ({ ...acc, [cur]: true }), {}, activeTagKeys)
       )
     );
@@ -129,7 +129,7 @@ class ContactListContainer extends Component {
     const newContact = R.pipe(addDownloadUrl, addColor, addTags)(contact);
 
     await createContact(newContact);
-    message.success("Contact Created");
+    message.success('Contact Created');
 
     this.setState({
       inNewMode: false,
@@ -180,33 +180,33 @@ class ContactListContainer extends Component {
   };
 
   exportContacts = contacts => {
-    const columnKeys = R.pluck("key")(columns);
-    let csv = `${columnKeys.join(",")},tags\n`;
+    const columnKeys = R.pluck('key')(columns);
+    let csv = `${columnKeys.join(',')},tags\n`;
     csv += contacts
       .map(ct => {
         let str = columnKeys
-          .map(key => ct[key] || "")
+          .map(key => ct[key] || '')
           .map(
-            key => (key.includes(",") || key.includes(".") ? `"${key}"` : key)
+            key => (key.includes(',') || key.includes('.') ? `"${key}"` : key)
           )
-          .join(",");
+          .join(',');
         if (ct.tagKeySet) {
           str += `,${R.keys(ct.tagKeySet)
             .map(k => `@${k}`)
-            .join(" ")}`;
+            .join(' ')}`;
         }
         return str;
       })
-      .join("\n");
-    const filename = "contacts.csv";
+      .join('\n');
+    const filename = 'contacts.csv';
     if (!csv.match(/^data:text\/csv/i)) {
       csv = `data:text/csv;charset=utf-8,${csv}`;
     }
     const data = encodeURI(csv);
 
-    const link = document.createElement("a");
-    link.setAttribute("href", data);
-    link.setAttribute("download", filename);
+    const link = document.createElement('a');
+    link.setAttribute('href', data);
+    link.setAttribute('download', filename);
     link.click();
   };
 
@@ -253,22 +253,22 @@ class ContactListContainer extends Component {
         !showOnlyDeleted === !c.deleted &&
         propContains(searchKey, contactColumns.map(col => col.key))(c) &&
         (R.isEmpty(activeColorIds) ||
-          activeColorIds.includes(c.color || "white")) &&
+          activeColorIds.includes(c.color || 'white')) &&
         (R.isEmpty(activeTagKeys) ||
           R.all(key => (c.tagKeySet || {})[key], activeTagKeys))
     );
 
     const filter = R.allPass([
       //   R.propEq("deleted", showOnlyDeleted),
-      propContains(searchKey, contactColumns.map(R.prop("key"))),
+      propContains(searchKey, contactColumns.map(R.prop('key'))),
       R.either(
         R.always(R.isEmpty(activeColorIds)),
         R.compose(
           R.flip(R.contains)(activeColorIds),
           // id => activeColorIds.includes(id),
           // id => R.contains(id, activeColorIds),
-          R.defaultTo("white"),
-          R.prop("color")
+          R.defaultTo('white'),
+          R.prop('color')
         )
       ),
       R.either(
@@ -276,7 +276,7 @@ class ContactListContainer extends Component {
         R.compose(
           set => R.all(key => set[key], activeTagKeys),
           R.defaultTo({}),
-          R.prop("tagKeySet")
+          R.prop('tagKeySet')
         )
       )
     ]);
@@ -288,7 +288,7 @@ class ContactListContainer extends Component {
         <div className="row">
           {/* <Tag onClick={() => this.setState({ showEventModal: true })}>
             Log</Tag> */}
-          <div style={{ width: "100%", marginBottom: 10 }}>
+          <div style={{ width: '100%', marginBottom: 10 }}>
             <Tag color="pink">{visibleContacts.length} Contacts</Tag>
             <ContactTagListHeaderContainer
               afterTagDelete={tag => deleteTagFromContacts(tag)}
@@ -298,8 +298,8 @@ class ContactListContainer extends Component {
               // tags={tags}
             />
             <VariantTagListHeaderContainer
-              color={"orange"}
-              activeColor={"magenta"}
+              color={'orange'}
+              activeColor={'magenta'}
               afterTagDelete={tag => deleteTagFromContacts(tag)}
               activeTagKeys={activeTagKeys}
               onActiveTagsChange={keys =>
@@ -307,8 +307,8 @@ class ContactListContainer extends Component {
               // tags={tags}
             />
             <VendorTagListHeaderContainer
-              color={"purple"}
-              activeColor={"#2db7f5"}
+              color={'purple'}
+              activeColor={'#2db7f5'}
               afterTagDelete={tag => deleteTagFromContacts(tag)}
               activeTagKeys={activeTagKeys}
               onActiveTagsChange={keys =>
@@ -411,20 +411,20 @@ class ContactListContainer extends Component {
           )}
           {showEmailTextArea && (
             <textarea
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               value={visibleContacts
                 .filter(c => c.email)
                 .map(c => c.email)
-                .join("; ")}
+                .join('; ')}
             />
           )}
           {showPhoneTextArea && (
             <textarea
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               value={visibleContacts
                 .filter(c => c.phone)
                 .map(c => c.phone)
-                .join("; ")}
+                .join('; ')}
             />
           )}
 
@@ -441,7 +441,7 @@ class ContactListContainer extends Component {
 
           {showTrafficModal && (
             <Modal
-              title={"Traffic to Home"}
+              title={'Traffic to Home'}
               visible={showTrafficModal}
               footer={null}
               width="640"
@@ -467,7 +467,7 @@ class ContactListContainer extends Component {
             >
               <ContactItemForm
                 loading={modalLoading}
-                loadingText={"Updating"}
+                loadingText={'Updating'}
                 onOk={updateContact}
                 onCancel={onModalCancel}
                 okText="Update"
@@ -487,7 +487,7 @@ class ContactListContainer extends Component {
               footer={null}
               onCancel={() => this.setState({ contactInventoryInEdit: null })}
             >
-              <InventoryEditContainer contact={contactInventoryInEdit} />
+              <InventoryEditContainer contactId={contactInventoryInEdit._id} />
             </Modal>
           )}
 
@@ -505,14 +505,14 @@ class ContactListContainer extends Component {
           )}
           {inNewMode && (
             <Modal
-              title={"Create New Contact "}
+              title={'Create New Contact '}
               visible={inNewMode}
               footer={null}
               onCancel={onModalCancel}
             >
               <ContactItemForm
                 loading={modalLoading}
-                loadingText={"Creating"}
+                loadingText={'Creating'}
                 onOk={createNewContact}
                 onCancel={onModalCancel}
                 okText="Create"

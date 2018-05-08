@@ -1,22 +1,22 @@
-import React, { Component } from "react";
-import { Tag, AutoComplete, Input, message } from "antd";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import { Tag, AutoComplete, Input, message } from 'antd';
+import PropTypes from 'prop-types';
 
 class TagInput extends Component {
   state = {
-    search: "",
-    value: ""
+    search: '',
+    value: ''
   };
 
   handleChange = e => {
     const { tags, addNewTag } = this.props;
-    if (e.key != "Enter") return;
+    if (e.key != 'Enter') return;
     const label = e.target.value.trim();
     if (tags.find(tg => tg.label == label)) {
       message.error(`Tag ${label} already exists`);
       return;
     }
-    return addNewTag(label).then(() => this.setState({ search: "" }));
+    return addNewTag(label).then(() => this.setState({ search: '' }));
   };
 
   render() {
@@ -43,7 +43,7 @@ class TagInput extends Component {
         )
         .map(tg => tg.label);
 
-    console.log("tag input", tags);
+    console.log('tag input', tags);
 
     return (
       <div className="tag-input-container">
@@ -57,7 +57,7 @@ class TagInput extends Component {
           value={search}
           onSearch={str => this.setState({ search: str })}
           onSelect={label => {
-            this.setState({ search: "" });
+            this.setState({ search: '' });
             onTagSelect(tags.find(tg => tg.label === label));
           }}
         >
