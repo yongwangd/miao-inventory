@@ -24,8 +24,17 @@ class VendorActionContainer extends React.Component {
 
     const generalParams = { contactId, variantKey, vendorKey };
 
+    if (!vendorInEdit) {
+      return <div />;
+    }
+
     return (
-      <Modal visible={visible} title={title} onCancel={onCancel} footer={null}>
+      <Modal
+        visible={visible && vendorInEdit}
+        title={title}
+        onCancel={onCancel}
+        footer={null}
+      >
         {JSON.stringify(vendorInEdit)}
         <p>Primary: {vendorInEdit.primary || 0}</p>
         <p>Secondary: {vendorInEdit.secondary || 0}</p>
@@ -33,14 +42,16 @@ class VendorActionContainer extends React.Component {
           Total: {(vendorInEdit.primary || 0) + (vendorInEdit.secondary || 0)}
         </p>
         <VendorActionItem
-          onSubmit={value =>
+          onSubmit={value => {
+            console.log(value);
             updateVendorQuantity({
               ...generalParams,
               type: 'primary',
               number: vendorInEdit.primary + value
             }).then(() =>
               message.success(`Added ${value} Items to Primary Storage`)
-            )}
+            );
+          }}
           text="Add -> Primary:"
         />
         <VendorActionItem
