@@ -22,14 +22,14 @@ class VendorActionContainer extends React.Component {
       onVendorRemoved
     } = this.props;
 
+    if (!vendorInEdit) {
+      return <div />;
+    }
+
     const generalParams = { contactId, variantKey, vendorKey };
 
     const { primary = 0, secondary = 0 } = vendorInEdit;
     const total = primary + secondary;
-
-    if (!vendorInEdit) {
-      return <div />;
-    }
 
     return (
       <Modal
