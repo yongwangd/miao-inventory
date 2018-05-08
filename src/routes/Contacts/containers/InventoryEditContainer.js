@@ -163,7 +163,11 @@ class InventoryEditContainer extends React.Component {
           <Button
             size="small"
             type="primary"
-            onClick={() => this.setState({ addingVariants: true })}
+            onClick={() =>
+              this.setState({
+                addingVariants: true,
+                variantsEditCopy: { ...(variantTagKeySet || {}) }
+              })}
           >
             Add Variants
           </Button>
@@ -256,7 +260,7 @@ class InventoryEditContainer extends React.Component {
               />
             </Modal>
           )}
-
+          {JSON.stringify(variantsEditCopy)}
           {addingVariants && (
             <Modal
               visible={addingVariants}
@@ -276,6 +280,7 @@ class InventoryEditContainer extends React.Component {
               }}
             >
               <VariantTagInputContainer
+                closable={false}
                 selectedTagSet={variantsEditCopy}
                 onTagSetChange={keySet => {
                   const diff = R.pickBy(
