@@ -22,7 +22,8 @@ import TagInputContainer, {
 } from './TagInputContainer';
 import {
   updateContactVariantVendors,
-  updateVendorQuantity
+  updateVendorQuantity,
+  removeVendorFromVariant
 } from '../../../fireQuery/contactsQuery';
 import SimpleInputWrapper from '../../../commonCmps/SimpleInputWrapper';
 import VendorActionItem from '../components/VendorActionItem';
@@ -199,6 +200,7 @@ class InventoryEditContainer extends React.Component {
               vendorKey={vendorInEdit.vendorKey}
               visible={vendorInEdit != null}
               title={`Edit Inventory for ${vendorInEdit.vendorKey}`}
+              onVenderRemoved={() => this({ vendorInEdit: null })}
               onCancel={() => this.setState({ vendorInEdit: null })}
             />
           )}

@@ -1,9 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, message } from 'antd';
+import { Modal, message, Popconfirm, Button } from 'antd';
 import R from 'ramda';
 import VendorActionItem from '../components/VendorActionItem';
-import { updateVendorQuantity } from '../../../fireQuery/contactsQuery';
+import {
+  updateVendorQuantity,
+  removeVendorFromVariant
+} from '../../../fireQuery/contactsQuery';
 
 class VendorActionContainer extends React.Component {
   state = {};
@@ -15,7 +18,8 @@ class VendorActionContainer extends React.Component {
       vendorInEdit,
       contactId,
       variantKey,
-      vendorKey
+      vendorKey,
+      onVendorRemoved
     } = this.props;
 
     const generalParams = { contactId, variantKey, vendorKey };
@@ -25,13 +29,15 @@ class VendorActionContainer extends React.Component {
         {JSON.stringify(vendorInEdit)}
         <p>Primary: {vendorInEdit.primary || 0}</p>
         <p>Secondary: {vendorInEdit.secondary || 0}</p>
-        <p>Total: {vendorInEdit.total || 0}</p>
+        <p>
+          Total: {(vendorInEdit.primary || 0) + (vendorInEdit.secondary || 0)}
+        </p>
         <VendorActionItem
           onSubmit={value =>
             updateVendorQuantity({
               ...generalParams,
               type: 'primary',
-              number: vendorInEdit + value
+              number: vendorInEdit.primary + value
             }).then(() =>
               message.success(`Added ${value} Items to Primary Storage`)
             )}
@@ -65,8 +71,32 @@ class VendorActionContainer extends React.Component {
           text="Primary -> Secondary:"
         />
         <VendorActionItem text="Secondary -> Primary:" />
-        <VendorActionItem text="Reset Primary to:" />
+        <VendorActionItem
+          onSubmit={value =>
+            updateVendorQuantity({
+              ...generalParams,
+              type: 'primary',
+              number: value
+            }).then(() => message.success('reset'))}
+          text="Reset Primary to:"
+        />
         <VendorActionItem text="Reset Secondary to:" />
+
+        <Popconfirm
+          title="Are you sure to Remove this Vendor?"
+          onConfirm={() => {
+            removeVendorFromVariant(
+              contactId,
+              variantKey,
+              vendorKey
+            ).then(() => {
+              message.success('Vendor Removed');
+              onVendorRemoved();
+            });
+          }}
+        >
+          <Button type="danger">Remove this Vendor</Button>
+        </Popconfirm>
       </Modal>
     );
   }
