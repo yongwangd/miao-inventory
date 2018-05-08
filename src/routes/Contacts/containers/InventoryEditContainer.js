@@ -20,7 +20,10 @@ import TagInputContainer, {
   VariantTagInputContainer,
   VendorTagInputContainer
 } from './TagInputContainer';
-import { updateContactVariantVendors } from '../../../fireQuery/contactsQuery';
+import {
+  updateContactVariantVendors,
+  updateVendorQuantity
+} from '../../../fireQuery/contactsQuery';
 import SimpleInputWrapper from '../../../commonCmps/SimpleInputWrapper';
 import VendorActionItem from '../components/VendorActionItem';
 
@@ -53,7 +56,13 @@ class InventoryEditContainer extends React.Component {
   };
 
   render() {
-    const { variantInEdit, vendorsEditCopy, vendorInEdit } = this.state;
+    const {
+      variantInEdit,
+      vendorsEditCopy,
+      vendorInEdit,
+      vendorInEditKey,
+      vendorInEditVariant
+    } = this.state;
     const { contact, variantTags, vendorTags } = this.props;
     const { variantTagKeySet } = contact;
 
@@ -70,34 +79,46 @@ class InventoryEditContainer extends React.Component {
     const renderVariants = variants => {
       console.log('render');
 
-      const getHeader = variant => (
-        <div>
-          <span>{variant.label}</span>
-          <span style={{ float: 'right' }}>
-            <span className="variant-header-span">
-              Primary:
-              <span>14</span>
+      const getHeader = variant => {
+        const { primary, secondary } = R.values(variant.vendors || {}).reduce(
+          (acc, cur) => ({
+            primary: acc.primary + cur.primary || 0,
+            secondary: acc.secondary + cur.secondary || 0
+          }),
+          { primary: 0, secondary: 0 }
+        );
+
+        const total = primary + secondary;
+
+        return (
+          <div>
+            <span>{variant.label}</span>
+            <span style={{ float: 'right' }}>
+              <span className="variant-header-span">
+                Primary:
+                <span>{primary}</span>
+              </span>
+              <span className="variant-header-span">
+                Secondary:
+                <span>{secondary}</span>
+              </span>
+              <span className="variant-header-span">
+                Total:
+                <span>{total}</span>
+              </span>
             </span>
-            <span className="variant-header-span">
-              Secondary:
-              <span>13</span>
-            </span>
-            <span className="variant-header-span">
-              Total:
-              <span>27</span>
-            </span>
-          </span>
-        </div>
-      );
+          </div>
+        );
+      };
 
       const renderVendor = (vendor, variant) => (
         <tr>
           {tableColumns.map(col => (
             <td key={col.key}>{vendor[col.dataIndex] || '0'}</td>
           ))}
+          <td>{vendor.primary || 0 + vendor.secondary || 0}</td>
           <td>
             <a
-              href="javascript:;"
               onClick={() =>
                 this.setState({
                   vendorInEdit: vendor,
@@ -123,6 +144,7 @@ class InventoryEditContainer extends React.Component {
                         {col.label}
                       </th>
                     ))}
+                    <th scope="col">Total</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
@@ -165,11 +187,11 @@ class InventoryEditContainer extends React.Component {
     return (
       <Spin spinning={false}>
         <div>
-          <LabelFieldSet label="VariantTags">
+          {/* <LabelFieldSet label="VariantTags">
             <div style={{ borderBottom: '1px solid lightgray' }}>
               <VariantTagInputContainer selectedTagSet={variantTagKeySet} />
             </div>
-          </LabelFieldSet>
+          </LabelFieldSet> */}
 
           {renderVariants(variantArray)}
 
@@ -181,7 +203,33 @@ class InventoryEditContainer extends React.Component {
               footer={null}
             >
               {JSON.stringify(vendorInEdit)}
-              <VendorActionItem text="Add -> Primary:" />
+              <p>Primary: {vendorInEdit.primary || 0}</p>
+              <p>Secondary: {vendorInEdit.secondary || 0}</p>
+              <p>Total: {vendorInEdit.total || 0}</p>
+              <VendorActionItem
+                onSubmit={value => {
+                  const before = vendorInEdit.primary || 0;
+                  const current = before + value;
+
+                  const params = {
+                    contactId: contact._id,
+                    variantKey: vendorInEditVariant.key,
+                    vendorKey: vendorInEdit.vendorKey,
+                    type: 'primary',
+                    number: current
+                  };
+
+                  console.log('params', params);
+
+                  updateVendorQuantity(params);
+                  {
+                    /* this.setState({
+                    vendorInEdit:
+                  }) */
+                  }
+                }}
+                text="Add -> Primary:"
+              />
               <VendorActionItem text="Remove <- Secondary" />
               <VendorActionItem text="Primary -> Secondary:" />
               <VendorActionItem text="Secondary -> Primary:" />

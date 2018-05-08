@@ -1,11 +1,11 @@
-import moment from "moment";
-import R from "ramda";
-import { getFireDB } from "./fireConnection";
-import { fireRef } from "../lib/firedog";
+import moment from 'moment';
+import R from 'ramda';
+import { getFireDB } from './fireConnection';
+import { fireRef } from '../lib/firedog';
 
-const contactsRef = fireRef(getFireDB().ref("contacts/"));
+const contactsRef = fireRef(getFireDB().ref('contacts/'));
 
-export const getContactsRef = () => getFireDB().ref("contacts/");
+export const getContactsRef = () => getFireDB().ref('contacts/');
 export const contactsList = () =>
   contactsRef.arrayStream().map(arr =>
     arr.map(ct => ({
@@ -51,4 +51,18 @@ export const createContact = contact => {
     createdTimeStr: now.format()
   });
 };
+
+export const updateVendorQuantity = ({
+  contactId,
+  variantKey,
+  vendorKey,
+  type,
+  number
+}) =>
+  getFireDB()
+    .ref(
+      `contacts/${contactId}/variantTagKeySet/${variantKey}/${vendorKey}/${type}`
+    )
+    .set(number);
+
 export const deleteContactById = id => contactsRef.removeById(id);
