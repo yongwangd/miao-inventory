@@ -26,6 +26,7 @@ import {
 } from '../../../fireQuery/contactsQuery';
 import SimpleInputWrapper from '../../../commonCmps/SimpleInputWrapper';
 import VendorActionItem from '../components/VendorActionItem';
+import VendorActionContainer from './VendorActionContainer';
 
 const { Panel } = Collapse;
 
@@ -43,7 +44,7 @@ const tableColumns = [
   {
     key: 'secondary',
     label: 'Secondary',
-    dataIndex: 'Secondary'
+    dataIndex: 'secondary'
   }
 ];
 
@@ -60,7 +61,6 @@ class InventoryEditContainer extends React.Component {
       variantInEdit,
       vendorsEditCopy,
       vendorInEdit,
-      vendorInEditKey,
       vendorInEditVariant
     } = this.state;
     const { contact, variantTags, vendorTags } = this.props;
@@ -80,12 +80,15 @@ class InventoryEditContainer extends React.Component {
       console.log('render');
 
       const getHeader = variant => {
-        const { primary, secondary } = R.values(variant.vendors || {}).reduce(
-          (acc, cur) => ({
-            primary: acc.primary + cur.primary || 0,
-            secondary: acc.secondary + cur.secondary || 0
-          }),
-          { primary: 0, secondary: 0 }
+        const primary = R.sum(
+          R.values(variant.vendors)
+            .map(v => v.primary)
+            .filter(v => v)
+        );
+        const secondary = R.sum(
+          R.values(variant.vendors)
+            .map(v => v.secondary)
+            .filter(v => v)
         );
 
         const total = primary + secondary;
@@ -116,7 +119,7 @@ class InventoryEditContainer extends React.Component {
           {tableColumns.map(col => (
             <td key={col.key}>{vendor[col.dataIndex] || '0'}</td>
           ))}
-          <td>{vendor.primary || 0 + vendor.secondary || 0}</td>
+          <td>{(vendor.primary || 0) + (vendor.secondary || 0)}</td>
           <td>
             <a
               onClick={() =>
@@ -172,12 +175,6 @@ class InventoryEditContainer extends React.Component {
               >
                 Add Vendor
               </Button>
-              <SimpleInputWrapper
-                text={'Add Vendor'}
-                onSubmit={() => console.log('submit')}
-              >
-                <VendorTagInputContainer />
-              </SimpleInputWrapper>
             </Panel>
           ))}
         </Collapse>
@@ -196,46 +193,14 @@ class InventoryEditContainer extends React.Component {
           {renderVariants(variantArray)}
 
           {vendorInEdit && (
-            <Modal
+            <VendorActionContainer
+              contactId={contact._id}
+              variantKey={vendorInEditVariant.key}
+              vendorKey={vendorInEdit.vendorKey}
               visible={vendorInEdit != null}
               title={`Edit Inventory for ${vendorInEdit.vendorKey}`}
               onCancel={() => this.setState({ vendorInEdit: null })}
-              footer={null}
-            >
-              {JSON.stringify(vendorInEdit)}
-              <p>Primary: {vendorInEdit.primary || 0}</p>
-              <p>Secondary: {vendorInEdit.secondary || 0}</p>
-              <p>Total: {vendorInEdit.total || 0}</p>
-              <VendorActionItem
-                onSubmit={value => {
-                  const before = vendorInEdit.primary || 0;
-                  const current = before + value;
-
-                  const params = {
-                    contactId: contact._id,
-                    variantKey: vendorInEditVariant.key,
-                    vendorKey: vendorInEdit.vendorKey,
-                    type: 'primary',
-                    number: current
-                  };
-
-                  console.log('params', params);
-
-                  updateVendorQuantity(params);
-                  {
-                    /* this.setState({
-                    vendorInEdit:
-                  }) */
-                  }
-                }}
-                text="Add -> Primary:"
-              />
-              <VendorActionItem text="Remove <- Secondary" />
-              <VendorActionItem text="Primary -> Secondary:" />
-              <VendorActionItem text="Secondary -> Primary:" />
-              <VendorActionItem text="Reset Primary to:" />
-              <VendorActionItem text="Reset Secondary to:" />
-            </Modal>
+            />
           )}
 
           {variantInEdit && (
