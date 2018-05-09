@@ -1,5 +1,5 @@
 import React from 'react';
-import { InputNumber, Button } from 'antd';
+import { InputNumber, Button, Input } from 'antd';
 
 class VendorActionItem extends React.Component {
   state = {
@@ -11,9 +11,11 @@ class VendorActionItem extends React.Component {
   render() {
     const {
       min = 0,
-      max = 1000,
+      max = 1000000,
       text = 'Pick a NUmber',
-      onSubmit
+      onSubmit,
+      onCancel,
+      valid
     } = this.props;
     const { value } = this.state;
     const { onValueChange } = this;
@@ -23,12 +25,22 @@ class VendorActionItem extends React.Component {
         <div style={{ flex: 1 }}>{text}</div>
         <div>
           <InputNumber
+            min={min}
+            max={max}
             style={{ width: 100, marginRight: 15 }}
-            defaultValue={value}
+            value={value}
             onChange={onValueChange}
           />
-          <Button type="primary" size="small" onClick={() => onSubmit(value)}>
+          <Button
+            disabled={!valid}
+            type="primary"
+            size="small"
+            onClick={() => onSubmit(value)}
+          >
             OK
+          </Button>
+          <Button size="small" onClick={onCancel}>
+            cancel
           </Button>
         </div>
       </div>
