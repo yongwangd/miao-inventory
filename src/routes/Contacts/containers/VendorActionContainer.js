@@ -168,6 +168,23 @@ class VendorActionContainer extends React.Component {
           <span className="badge badge-danger">{secondary}</span> */}
           <a>Total:</a>
           <span className="badge badge-danger">{total}</span>
+          <Popconfirm
+            title="Are you sure to Remove this Vendor?"
+            onConfirm={() => {
+              removeVendorFromVariant(
+                contactId,
+                variantKey,
+                vendorKey
+              ).then(() => {
+                message.success('Vendor Removed');
+                onVendorRemoved();
+              });
+            }}
+          >
+            <Button style={{ float: 'right' }} type="danger">
+              Remove this Vendor
+            </Button>
+          </Popconfirm>
         </p>
 
         <div>
@@ -238,44 +255,6 @@ class VendorActionContainer extends React.Component {
                   style={{ cursor: mode.enabled ? 'pointer' : 'default' }}
                 />
               ))}
-            {/* <line
-              onClick={() =>
-                this.setState({ showEditModal: 'moveToSecondary' })}
-              id="moveToSecondary"
-              x1="200"
-              y1="60"
-              x2="270"
-              y2="60"
-              markerEnd="url(#Triangle)"
-            />
-            <line
-              onClick={() => this.setState({ showEditModal: 'moveToPrimary' })}
-              id="moveToPrimary"
-              x1="300"
-              y1="120"
-              x2="230"
-              y2="120"
-              markerEnd="url(#Triangle)"
-            />
-            <line
-              onClick={() => this.setState({ showEditModal: 'addToPrimary' })}
-              id="addToPrimary"
-              x1="20"
-              y1="90"
-              x2="70"
-              y2="90"
-              markerEnd="url(#Triangle)"
-            />
-            <line
-              onClick={() =>
-                this.setState({ showEditModal: 'outFromSecondary' })}
-              id="outFromSecondary"
-              x1="400"
-              y1="90"
-              x2="460"
-              y2="90"
-              markerEnd="url(#Triangle)"
-            /> */}
             <text
               x="150"
               y="30"

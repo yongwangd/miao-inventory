@@ -32,10 +32,11 @@ class VendorActionItem extends React.Component {
             onChange={onValueChange}
           />
           <Button
-            disabled={!valid}
+            disabled={!valid(value)}
             type="primary"
             size="small"
             onClick={() => onSubmit(value)}
+            style={{ marginRight: 10 }}
           >
             OK
           </Button>
