@@ -274,3 +274,18 @@ a {
     margin-right: 25px;
   }
 }
+
+#action-svg {
+  // border: 2px solid red;
+  // width: 100%;
+
+  line {
+    stroke-width: 20;
+    stroke: orange;
+    cursor: pointer;
+  }
+
+  text {
+    font-family: system-ui;
+  }
+}

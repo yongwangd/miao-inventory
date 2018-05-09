@@ -318,6 +318,7 @@ class ContactListContainer extends Component {
               // tags={tags}
             />
           </div>
+
           {showEmailTextArea ? (
             <Tooltip title="Hide Emails">
               <Icon
