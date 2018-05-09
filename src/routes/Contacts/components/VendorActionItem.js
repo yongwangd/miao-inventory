@@ -1,5 +1,6 @@
 import React from 'react';
 import { InputNumber, Button, Input } from 'antd';
+import { NAVY } from '../../../properties/Colors';
 
 class VendorActionItem extends React.Component {
   state = {
@@ -22,7 +23,9 @@ class VendorActionItem extends React.Component {
 
     return (
       <div style={{ display: 'flex', marginBottom: 10 }}>
-        <div style={{ flex: 1 }}>{text}</div>
+        <div style={{ flex: 1, fontWeight: 'bold', fontSize: 15, color: NAVY }}>
+          {text}
+        </div>
         <div>
           <InputNumber
             min={min}
@@ -30,6 +33,8 @@ class VendorActionItem extends React.Component {
             style={{ width: 100, marginRight: 15 }}
             value={value}
             onChange={onValueChange}
+            onKeyPress={e =>
+              e.key === 'Enter' && valid(value) && onSubmit(value)}
           />
           <Button
             disabled={!valid(value)}

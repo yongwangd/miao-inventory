@@ -7,6 +7,15 @@ import {
   updateVendorQuantity,
   removeVendorFromVariant
 } from '../../../fireQuery/contactsQuery';
+import {
+  GREEN,
+  SILVER,
+  ORANGE,
+  RED,
+  BLUE,
+  MAROON,
+  BLACK
+} from '../../../properties/Colors';
 
 class VendorActionContainer extends React.Component {
   state = {
@@ -38,6 +47,11 @@ class VendorActionContainer extends React.Component {
     // const generateResult = message =>
     //   message ? { pass: false, message } : { pass: true };
 
+    const ACTIVE_COLOR = BLACK;
+    const ENABLE_COLOR = ORANGE;
+    const DISABLE_COLOR = SILVER;
+    const RECT_ACTIVE_COLOR = GREEN;
+
     const modes = {
       newToPrimary: {
         line: true,
@@ -49,16 +63,14 @@ class VendorActionContainer extends React.Component {
         enabled: true,
         min: 1,
         valid: value => value > 0,
-        onSubmit: value => {
-          console.log(value);
+        onSubmit: value =>
           updateVendorQuantity({
             ...generalParams,
             type: 'primary',
             number: primary + value
           }).then(() =>
             message.success(`Added ${value} Items to Primary Storage`)
-          );
-        }
+          )
       },
       moveToSecondary: {
         line: true,
@@ -197,7 +209,19 @@ class VendorActionContainer extends React.Component {
               markerWidth="1.8"
               markerHeight="1.8"
               orient="auto"
-              fill="orange"
+              fill={ENABLE_COLOR}
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" />
+            </marker>
+            <marker
+              id="TriangleActive"
+              viewBox="0 0 10 10"
+              refX="1"
+              refY="5"
+              markerWidth="1.8"
+              markerHeight="1.8"
+              orient="auto"
+              fill={ACTIVE_COLOR}
             >
               <path d="M 0 0 L 10 5 L 0 10 z" />
             </marker>
@@ -209,7 +233,7 @@ class VendorActionContainer extends React.Component {
               markerWidth="1.8"
               markerHeight="1.8"
               orient="auto"
-              fill="lightgray"
+              fill={DISABLE_COLOR}
             >
               <path d="M 0 0 L 10 5 L 0 10 z" />
             </marker>
@@ -220,7 +244,7 @@ class VendorActionContainer extends React.Component {
               y="40"
               width="100"
               height="100"
-              stroke="#87d068"
+              stroke={primary > 0 ? RECT_ACTIVE_COLOR : DISABLE_COLOR}
               strokeWidth="5"
               fill="white"
             />
@@ -231,7 +255,7 @@ class VendorActionContainer extends React.Component {
               y="40"
               width="100"
               height="100"
-              stroke="#87d068"
+              stroke={secondary > 0 ? RECT_ACTIVE_COLOR : DISABLE_COLOR}
               strokeWidth="5"
               fill="white"
             />
@@ -249,9 +273,17 @@ class VendorActionContainer extends React.Component {
                   onClick={() =>
                     mode.enabled && this.setState({ showEditModal: mode.key })}
                   markerEnd={
-                    mode.enabled ? 'url(#Triangle)' : 'url(#TriangleDisabled)'
+                    mode.key == showEditModal
+                      ? 'url(#TriangleActive)'
+                      : mode.enabled
+                        ? 'url(#Triangle)'
+                        : 'url(#TriangleDisabled)'
                   }
-                  stroke={mode.enabled ? 'orange' : 'lightgray'}
+                  stroke={
+                    mode.key == showEditModal
+                      ? ACTIVE_COLOR
+                      : mode.enabled ? ENABLE_COLOR : DISABLE_COLOR
+                  }
                   style={{ cursor: mode.enabled ? 'pointer' : 'default' }}
                 />
               ))}
@@ -283,7 +315,11 @@ class VendorActionContainer extends React.Component {
               fontSize="35"
               textAnchor="middle"
               fontWeight="bold"
-              fill="#87d068"
+              fill={
+                showEditModal == 'resetPrimary'
+                  ? ACTIVE_COLOR
+                  : primary > 0 ? RECT_ACTIVE_COLOR : DISABLE_COLOR
+              }
               style={{ cursor: 'pointer' }}
             >
               {primary}
@@ -295,7 +331,11 @@ class VendorActionContainer extends React.Component {
               fontSize="35"
               textAnchor="middle"
               fontWeight="bold"
-              fill="#87d068"
+              fill={
+                showEditModal == 'resetSecondary'
+                  ? ACTIVE_COLOR
+                  : secondary > 0 ? RECT_ACTIVE_COLOR : DISABLE_COLOR
+              }
               style={{ cursor: 'pointer' }}
             >
               {secondary}
@@ -313,22 +353,7 @@ class VendorActionContainer extends React.Component {
               onCancel={() => this.setState({ showEditModal: null })}
             />
           )}
-
-        <Popconfirm
-          title="Are you sure to Remove this Vendor?"
-          onConfirm={() => {
-            removeVendorFromVariant(
-              contactId,
-              variantKey,
-              vendorKey
-            ).then(() => {
-              message.success('Vendor Removed');
-              onVendorRemoved();
-            });
-          }}
-        >
-          <Button type="danger">Remove this Vendor</Button>
-        </Popconfirm>
+        <div style={{ marginBottom: 30 }} />
       </Modal>
     );
   }
