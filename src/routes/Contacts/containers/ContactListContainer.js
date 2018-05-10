@@ -30,6 +30,8 @@ import InventoryEditContainer from './InventoryEditContainer';
   contacts: state.contactChunk.contacts,
   touchOnly: state.env.touchOnly,
   tags: state.tagChunk.tags,
+  variantTags: state.variantTagChunk.tags,
+  vendorTags: state.vendorTagChunk.tags,
   dataLoading:
     state.contactChunk.initialLoading || state.tagChunk.initialLoading
 }))
@@ -48,6 +50,8 @@ class ContactListContainer extends Component {
     modalLoading: false,
     activeColorIds: [],
     activeTagKeys: [],
+    activeVariantTagKeys: [],
+    activeVendorTagKeys: [],
     showTagContainer: false
   };
 
@@ -231,6 +235,8 @@ class ContactListContainer extends Component {
       contacts = [],
       touchOnly = false,
       tags = [],
+      variantTags = [],
+      vendorTags = [],
       dataLoading
     } = this.props;
 
@@ -245,6 +251,8 @@ class ContactListContainer extends Component {
       showOnlyDeleted,
       showPhoneTextArea,
       activeTagKeys,
+      activeVariantTagKeys,
+      activeVendorTagKeys,
       showEventLogModal,
       showTrafficModal,
       showTagContainer
@@ -257,36 +265,56 @@ class ContactListContainer extends Component {
         (R.isEmpty(activeColorIds) ||
           activeColorIds.includes(c.color || 'white')) &&
         (R.isEmpty(activeTagKeys) ||
-          R.all(key => (c.tagKeySet || {})[key], activeTagKeys))
+          R.all(key => (c.tagKeySet || {})[key], activeTagKeys)) &&
+        (R.isEmpty(activeVariantTagKeys) ||
+          R.all(key => (c.variantTagKeySet || {})[key], activeVariantTagKeys)) 
+
     );
 
-    const filter = R.allPass([
-      //   R.propEq("deleted", showOnlyDeleted),
-      propContains(searchKey, contactColumns.map(R.prop('key'))),
-      R.either(
-        R.always(R.isEmpty(activeColorIds)),
-        R.compose(
-          R.flip(R.contains)(activeColorIds),
-          // id => activeColorIds.includes(id),
-          // id => R.contains(id, activeColorIds),
-          R.defaultTo('white'),
-          R.prop('color')
-        )
-      ),
-      R.either(
-        R.always(R.isEmpty(activeTagKeys)),
-        R.compose(
-          set => R.all(key => set[key], activeTagKeys),
-          R.defaultTo({}),
-          R.prop('tagKeySet')
-        )
-      )
-    ]);
+    //FP implementation, kinda verbose
+    // const filter = R.allPass([
+    //   //   R.propEq("deleted", showOnlyDeleted),
+    //   propContains(searchKey, contactColumns.map(R.prop('key'))),
+    //   R.either(
+    //     R.always(R.isEmpty(activeColorIds)),
+    //     R.compose(
+    //       R.flip(R.contains)(activeColorIds),
+    //       // id => activeColorIds.includes(id),
+    //       // id => R.contains(id, activeColorIds),
+    //       R.defaultTo('white'),
+    //       R.prop('color')
+    //     )
+    //   ),
+    //   R.either(
+    //     R.always(R.isEmpty(activeTagKeys)),
+    //     R.compose(
+    //       set => R.all(key => set[key], activeTagKeys),
+    //       R.defaultTo({}),
+    //       R.prop('tagKeySet')
+    //     )
+    //   ),
+    //   R.either(
+    //     R.always(R.isEmpty(activeVariantTagKeys)),
+    //     R.compose(
+    //       set => {
+    //         console.log(set);
+    //         const r = R.all(key => set[key], activeVariantTagKeys);
+    //         console.log(r, 'result');
+    //         return r;
+    //       },
+    //       R.defaultTo({}),
+    //       R.prop('variantTagKeySet')
+    //     )
+    //   )
+    // ]);
 
-    const vs = R.filter(filter, contacts);
+    // const vs = R.filter(filter, contacts);
 
     return (
       <Spin spinning={dataLoading} size="large" tip="Loading Contacts">
+        {JSON.stringify(activeTagKeys)}
+        {JSON.stringify(activeVariantTagKeys)}
+        {JSON.stringify(activeVendorTagKeys)}
         <div className="row">
           {/* <Tag onClick={() => this.setState({ showEventModal: true })}>
             Log</Tag> */}
@@ -323,9 +351,9 @@ class ContactListContainer extends Component {
               color={'orange'}
               activeColor={'magenta'}
               afterTagDelete={tag => deleteTagFromContacts(tag)}
-              activeTagKeys={activeTagKeys}
+              activeTagKeys={activeVariantTagKeys}
               onActiveTagsChange={keys =>
-                this.setState({ activeTagKeys: keys })}
+                this.setState({ activeVariantTagKeys: keys })}
               // tags={tags}
             />
             <div />
@@ -333,9 +361,9 @@ class ContactListContainer extends Component {
               color={'purple'}
               activeColor={'#2db7f5'}
               afterTagDelete={tag => deleteTagFromContacts(tag)}
-              activeTagKeys={activeTagKeys}
+              activeTagKeys={activeVendorTagKeys}
               onActiveTagsChange={keys =>
-                this.setState({ activeTagKeys: keys })}
+                this.setState({ activeVendorTagKeys: keys })}
               // tags={tags}
             />
           </div>
@@ -454,6 +482,7 @@ class ContactListContainer extends Component {
 
           <ContactList
             tags={tags}
+            variantTags={variantTags}
             touchOnly={touchOnly}
             search={searchKey}
             contacts={visibleContacts}

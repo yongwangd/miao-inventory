@@ -19,6 +19,12 @@ a {
   cursor: pointer;
 }
 
+a:hover {
+  text-decoration: underline !important
+}
+
+
+
 *,
 *:before,
 *:after {
@@ -175,8 +181,9 @@ a {
 	padding: 5px;
 	background-color: white;
 	.tag-input-box {
-		border-color: transparent;
-		min-width:120px;
+		// border-color: transparent;
+    min-width:120px;
+    border: 1px soild lightgray;
 	}
 	.tag-input-box:focus {
 		outline: none;

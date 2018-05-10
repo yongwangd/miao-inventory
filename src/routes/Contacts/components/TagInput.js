@@ -39,7 +39,10 @@ class TagInput extends Component {
     const filterTags = str =>
       tags
         .filter(
-          tg => tg.label && !selectedTagSet[tg.key] && tg.label.includes(str)
+          tg =>
+            tg.label &&
+            !selectedTagSet[tg.key] &&
+            tg.label.toLowerCase().includes(str.toLowerCase())
         )
         .map(tg => tg.label);
 
@@ -59,8 +62,9 @@ class TagInput extends Component {
             onTagSelect(tags.find(tg => tg.label === label));
           }}
         >
-          <input
-            className="tag-inputbox"
+          <Input
+            className="tag-input-box"
+            style={{ borderBottom: '1px solid lightgray' }}
             value={search}
             onChange={e => this.setState({ search: e.target.value })}
             onKeyPress={handleChange}

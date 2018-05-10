@@ -5,11 +5,11 @@ import {
   Modal,
   Button,
   Spin,
-  Menu,
   Collapse,
   message,
   Icon,
-  Dropdown
+  Dropdown,
+  Popconfirm
 } from 'antd';
 import {
   VariantTagInputContainer,
@@ -91,10 +91,10 @@ class InventoryEditContainer extends React.Component {
 
         const total = primary + secondary;
         const menu = (
-          <Menu>
-            <Menu.Item>
-              <Button
-                type="primary"
+          <ul className="list-group">
+            <li className="list-group-item">
+              <a
+                className="text-primary"
                 onClick={e => {
                   e.preventDefault();
                   this.setState({
@@ -104,25 +104,24 @@ class InventoryEditContainer extends React.Component {
                 }}
               >
                 Add Vendors
-              </Button>
-            </Menu.Item>
-            <Menu.Item>
-              <Button
-                type="danger"
-                onClick={e => {
-                  e.preventDefault();
-                  removeContactVariant(
-                    contact._id,
-                    variantInEdit.key
-                  ).then(() => {
+              </a>
+            </li>
+            <li className="list-group-item">
+              <Popconfirm
+                title={`Are you sure to Delete [${variant.label}]`}
+                onConfirm={e => {
+                  e.stopPropagation();
+                  removeContactVariant(contact._id, variant.key).then(() => {
                     message.success('Variant Removed');
                   });
                 }}
+                okText="Yes"
+                cancelText="No"
               >
-                Remove Variant
-              </Button>
-            </Menu.Item>
-          </Menu>
+                <a className="text-danger">Remove Variant</a>
+              </Popconfirm>
+            </li>
+          </ul>
         );
 
         return (
@@ -189,7 +188,7 @@ class InventoryEditContainer extends React.Component {
                     [
                       <p>No Vendors</p>,
                       <Button
-                        size="sm"
+                        size="small"
                         onClick={e => {
                           e.preventDefault();
                           this.setState({
@@ -237,11 +236,6 @@ class InventoryEditContainer extends React.Component {
     return (
       <Spin spinning={false}>
         <div>
-          {/* <LabelFieldSet label="VariantTags">
-            <div style={{ borderBottom: '1px solid lightgray' }}>
-              <VariantTagInputContainer selectedTagSet={variantTagKeySet} />
-            </div>
-          </LabelFieldSet> */}
 
           {renderVariants(variantArray)}
 

@@ -1,4 +1,4 @@
-import { admin, functions } from "./fireConfig";
+import { admin, functions } from './fireConfig';
 
 const makeList = (ob = {}) =>
   Object.keys(ob).map(_id => {
@@ -15,7 +15,7 @@ exports.addMessage = functions.https.onRequest((req, res) => {
   // Push the new message into the Realtime Database using the Firebase Admin SDK.
   admin
     .database()
-    .ref("/messages")
+    .ref('/messages')
     .push({ original })
     .then(snapshot => {
       // Redirect with 303 SEE OTHER to the URL of the pushed object in the Firebase console.
@@ -31,7 +31,7 @@ exports.addMessage = functions.https.onRequest((req, res) => {
 // });
 
 exports.deleteTagFromContacts = functions.database
-  .ref("/contactTags/{deleteId}")
+  .ref('/contactTags/{deleteId}')
   .onDelete(event => {
     const tag = event.data.previous.val();
     console.log(
@@ -40,8 +40,8 @@ exports.deleteTagFromContacts = functions.database
 
     return admin
       .database()
-      .ref("contacts/")
-      .once("value", e => {
+      .ref('contacts/')
+      .once('value', e => {
         console.log(e.val());
         const contacts = e.val();
         const contains = Object.keys(contacts)
@@ -62,11 +62,11 @@ exports.deleteTagFromContacts = functions.database
         contains.forEach(
           ct => (updates[`${ct._id}/tagKeySet/${tag.key}`] = null)
         );
-        console.log("THe update will be performerd is ,", updates);
+        console.log('THe update will be performerd is ,', updates);
 
         return admin
           .database()
-          .ref("contacts/")
+          .ref('contacts/')
           .update(updates);
       });
   });
@@ -74,19 +74,19 @@ exports.deleteTagFromContacts = functions.database
 exports.cleanContactTags = functions.https.onRequest((req, res) => {
   admin
     .database()
-    .ref("contactTags")
-    .once("value", tagv => {
+    .ref('contactTags')
+    .once('value', tagv => {
       const tags = makeList(tagv.val());
       const tagKeys = tags.map(tg => tg.key);
 
       admin
         .database()
-        .ref("contacts")
-        .once("value", ctv => {
+        .ref('contacts')
+        .once('value', ctv => {
           const updates = {};
           const contacts = makeList(ctv.val());
 
-          let msg = "Deleting TAGS:::";
+          let msg = 'Deleting TAGS:::';
 
           contacts.forEach(ct => {
             const ts = Object.keys(ct.tagKeySet || {}).filter(
@@ -96,16 +96,16 @@ exports.cleanContactTags = functions.https.onRequest((req, res) => {
             ts.forEach(key => (updates[`${ct._id}/tagKeySet/${key}`] = null));
 
             if (ts.length > 0) {
-              msg += `${ts.join(", ")} from ${ct.name}  ...  `;
+              msg += `${ts.join(', ')} from ${ct.name}  ...  `;
             }
           });
 
-          console.log("The clean will be performered is ,", updates);
-          console.log("message is ", msg);
+          console.log('The clean will be performered is ,', updates);
+          console.log('message is ', msg);
 
           admin
             .database()
-            .ref("contacts")
+            .ref('contacts')
             .update(updates);
 
           res.send({ msg, updates });

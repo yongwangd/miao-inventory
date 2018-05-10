@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Col,
   Row,
@@ -8,15 +8,15 @@ import {
   Icon,
   Popconfirm,
   Tooltip
-} from "antd";
-import R from "ramda";
-import ColorList from "./ColorList";
-import colors from "../../../properties/cardColors";
-import { updateContactById } from "../../../fireQuery/contactsQuery";
-import TagList from "./TagList";
-import columns from "../../../properties/contactColumns";
-import SearchHighlight from "../../../commonCmps/SearchHighlight";
-import { stopAsyncValidation } from "redux-form";
+} from 'antd';
+import R from 'ramda';
+import ColorList from './ColorList';
+import colors from '../../../properties/cardColors';
+import { updateContactById } from '../../../fireQuery/contactsQuery';
+import TagList from './TagList';
+import columns from '../../../properties/contactColumns';
+import SearchHighlight from '../../../commonCmps/SearchHighlight';
+import { stopAsyncValidation } from 'redux-form';
 
 class ContactCard extends React.Component {
   constructor(props) {
@@ -27,8 +27,8 @@ class ContactCard extends React.Component {
   setContactColor(colorId) {
     const { _id } = this.props.info;
     updateContactById(_id, { color: colorId }).then(r => {
-      console.log("updated collor", r);
-      message.success("Color Updated");
+      console.log('updated collor', r);
+      message.success('Color Updated');
     });
   }
   render() {
@@ -44,7 +44,7 @@ class ContactCard extends React.Component {
     } = this.props;
     const { setContactColor, setHovering } = this;
     // const { name, age, email, phone, search} = props;
-    const { _id, name, color = "white", deleted = false, ...rest } = info;
+    const { _id, name, color = 'white', deleted = false, ...rest } = info;
     const colorObj = colors.find(c => c.id == color);
 
     const nameTitle = (
@@ -57,14 +57,14 @@ class ContactCard extends React.Component {
       <div key={label}>
         <p
           style={{
-            fontWeight: "bold",
+            fontWeight: 'bold',
             fontSize: 12,
-            color: colorObj.titleColor || "#AAAAAA"
+            color: colorObj.titleColor || '#AAAAAA'
           }}
         >
           {label}
         </p>
-        <span style={{ color: colorObj.font, wordWrap: "break-word" }}>
+        <span style={{ color: colorObj.font, wordWrap: 'break-word' }}>
           <SearchHighlight search={search} value={format(value)} />
         </span>
       </div>
@@ -108,7 +108,7 @@ class ContactCard extends React.Component {
         <Popover
           placement="bottomRight"
           content={colorBox}
-          trigger={touchOnly ? "click" : "hover"}
+          trigger={touchOnly ? 'click' : 'hover'}
         >
           <span className="color-picker-wrapper">
             <span
@@ -128,7 +128,7 @@ class ContactCard extends React.Component {
       >
         <div className="card-title">
           <div className="title-text" style={{ color: colorObj.font }}>
-            <span onClick={() => onInventoryClick(info)}>{nameTitle}</span>
+            <a onClick={() => onInventoryClick(info)}>{nameTitle}</a>
           </div>
           <div className="title-extra">{extra}</div>
         </div>
@@ -136,23 +136,59 @@ class ContactCard extends React.Component {
           <Col className="card-text">
             {columns
               .filter(
-                c => !c.notShow && info[c.key] != null && info[c.key] != ""
+                c => !c.notShow && info[c.key] != null && info[c.key] != ''
               )
               .map(c => renderRow(c.label, info[c.key], c.format))}
+
+            {[
+              { key: 'tagKeySet', label: 'Tags', source: tags },
+              {
+                key: 'variantTagKeySet',
+                label: 'Variants',
+                source: variantTags
+              }
+            ]
+              .filter(
+                config =>
+                  R.is(Object, info[config.key]) && !R.isEmpty(info[config.key])
+              )
+              .map(config => (
+                <div key={config.key}>
+                  <p
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: 12,
+                      color: colorObj.titleColor || '#AAAAAA'
+                    }}
+                  >
+                    {config.label}
+                  </p>
+                  <span
+                    style={{ color: colorObj.font, wordWrap: 'break-word' }}
+                  >
+                    <TagList
+                      color={colorObj.font}
+                      tags={R.keys(info[config.key])
+                        .map(t => config.source.find(tg => tg.key == t))
+                        .filter(x => x)}
+                    />
+                  </span>
+                </div>
+              ))}
             {R.is(Object, info.tagKeySet) &&
               !R.isEmpty(info.tagKeySet) && (
                 <div>
                   <p
                     style={{
-                      fontWeight: "bold",
+                      fontWeight: 'bold',
                       fontSize: 12,
-                      color: colorObj.titleColor || "#AAAAAA"
+                      color: colorObj.titleColor || '#AAAAAA'
                     }}
                   >
-                    {"Tags"}
+                    {'Tags'}
                   </p>
                   <span
-                    style={{ color: colorObj.font, wordWrap: "break-word" }}
+                    style={{ color: colorObj.font, wordWrap: 'break-word' }}
                   >
                     <TagList
                       color={colorObj.font}
@@ -167,7 +203,7 @@ class ContactCard extends React.Component {
         </Row>
         {info.downloadURL && (
           <img
-            style={{ width: "100%", marginTop: 10 }}
+            style={{ width: '100%', marginTop: 10 }}
             src={info.downloadURL}
           />
         )}
