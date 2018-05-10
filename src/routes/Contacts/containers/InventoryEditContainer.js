@@ -143,7 +143,12 @@ class InventoryEditContainer extends React.Component {
               </span>
               <Dropdown overlay={menu}>
                 <Icon
-                  style={{ fontSize: 17, marginLeft: 15, color: 'black' }}
+                  style={{
+                    fontSize: 17,
+                    marginLeft: 15,
+                    color: 'black',
+                    marginRight: 10
+                  }}
                   type="setting"
                 />
               </Dropdown>
@@ -173,37 +178,59 @@ class InventoryEditContainer extends React.Component {
       );
 
       return (
-        <Collapse bordered={false} defaultActiveKey={['1']}>
+        <div>
           {variantArray.length == 0 && <p>No Variants</p>}
-
-          {variantArray != null &&
-            variantArray.length > 0 &&
-            variantArray.map(variant => (
-              <Panel key={variant.id} header={getHeader(variant)}>
-                <table className="table table-hover table-sm ">
-                  <thead>
-                    <tr>
-                      {tableColumns.map(col => (
-                        <th scope="col" key={col.key}>
-                          {col.label}
-                        </th>
-                      ))}
-                      <th scope="col">Total</th>
-                      <th scope="col">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(variant.vendors || {})
-                      .map(([vendorKey, value]) => ({
-                        vendorKey,
-                        ...value
-                      }))
-                      .map(vendor => renderVendor(vendor, variant))}
-                  </tbody>
-                </table>
-              </Panel>
-            ))}
-        </Collapse>
+          <Collapse defaultActiveKey={['1']}>
+            {variantArray != null &&
+              variantArray.length > 0 &&
+              variantArray.map(variant => (
+                <Panel key={variant.id} header={getHeader(variant)}>
+                  {Object.keys(variant.vendors || {}).length == 0 ? (
+                    [
+                      <p>No Vendors</p>,
+                      <Button
+                        size="sm"
+                        onClick={e => {
+                          e.preventDefault();
+                          this.setState({
+                            variantInEdit: variant,
+                            vendorsEditCopy: { ...variant.vendors }
+                          });
+                        }}
+                      >
+                        Add Vendors
+                      </Button>
+                    ]
+                  ) : (
+                    <table
+                      className="table table-hover table-sm "
+                      style={{ border: '1px solid lightgray' }}
+                    >
+                      <thead>
+                        <tr>
+                          {tableColumns.map(col => (
+                            <th scope="col" key={col.key}>
+                              {col.label}
+                            </th>
+                          ))}
+                          <th scope="col">Total</th>
+                          <th scope="col">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(variant.vendors || {})
+                          .map(([vendorKey, value]) => ({
+                            vendorKey,
+                            ...value
+                          }))
+                          .map(vendor => renderVendor(vendor, variant))}
+                      </tbody>
+                    </table>
+                  )}
+                </Panel>
+              ))}
+          </Collapse>
+        </div>
       );
     };
 

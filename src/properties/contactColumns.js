@@ -1,19 +1,21 @@
 const columns = [
   {
-    key: "name",
-    label: "Name"
+    key: 'name',
+    label: 'Name',
+    notShow: true
   },
   {
-    key: "quantity",
-    label: "Quantity"
+    key: 'quantity',
+    label: 'Quantity'
   },
   {
-    key: "inStock",
-    label: "In Stock"
+    key: 'inStock',
+    label: 'In Stock'
   },
   {
-    key: "comment",
-    label: "Comment"
+    key: 'comment',
+    label: 'Comment',
+    notShow: true
   }
 ];
 

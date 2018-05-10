@@ -28,6 +28,7 @@ class VendorActionItem extends React.Component {
         </div>
         <div>
           <InputNumber
+            autoFocus
             min={min}
             max={max}
             style={{ width: 100, marginRight: 15 }}

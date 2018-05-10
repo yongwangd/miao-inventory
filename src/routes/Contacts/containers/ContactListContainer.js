@@ -47,7 +47,8 @@ class ContactListContainer extends Component {
     showOnlyDeleted: false,
     modalLoading: false,
     activeColorIds: [],
-    activeTagKeys: []
+    activeTagKeys: [],
+    showTagContainer: false
   };
 
   onSearchChange = evt =>
@@ -245,7 +246,8 @@ class ContactListContainer extends Component {
       showPhoneTextArea,
       activeTagKeys,
       showEventLogModal,
-      showTrafficModal
+      showTrafficModal,
+      showTagContainer
     } = this.state;
 
     const visibleContacts = contacts.filter(
@@ -289,14 +291,33 @@ class ContactListContainer extends Component {
           {/* <Tag onClick={() => this.setState({ showEventModal: true })}>
             Log</Tag> */}
           <div style={{ width: '100%', marginBottom: 10 }}>
-            <Tag color="pink">{visibleContacts.length} Contacts</Tag>
-            <ContactTagListHeaderContainer
-              afterTagDelete={tag => deleteTagFromContacts(tag)}
-              activeTagKeys={activeTagKeys}
-              onActiveTagsChange={keys =>
-                this.setState({ activeTagKeys: keys })}
-              // tags={tags}
-            />
+            <Tag color="pink">{visibleContacts.length} Products</Tag>
+            {showTagContainer && (
+              <Button
+                onClick={() => this.setState({ showTagContainer: false })}
+                size="small"
+              >
+                Hide Tags
+              </Button>
+            )}
+            {!showTagContainer && (
+              <Button
+                onClick={() => this.setState({ showTagContainer: true })}
+                size="small"
+              >
+                Show Tags
+              </Button>
+            )}
+            {showTagContainer && (
+              <ContactTagListHeaderContainer
+                afterTagDelete={tag => deleteTagFromContacts(tag)}
+                activeTagKeys={activeTagKeys}
+                onActiveTagsChange={keys =>
+                  this.setState({ activeTagKeys: keys })}
+                // tags={tags}
+              />
+            )}
+            <div />
             <div />
             <VariantTagListHeaderContainer
               color={'orange'}
