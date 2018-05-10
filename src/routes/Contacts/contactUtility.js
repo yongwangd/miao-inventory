@@ -24,7 +24,7 @@ export const exportContactInventory = (
       const { name, variantTagKeySet } = ct;
 
       return Object.entries(
-        variantTagKeySet
+        variantTagKeySet || {}
       ).map(([variantKey, variantValue]) => ({
         name,
         variant: variantKey,
@@ -38,7 +38,9 @@ export const exportContactInventory = (
   const vendorStep = R.flatten(
     variantStep.map(vt => {
       const { variant, name, variantValue } = vt;
-      return Object.entries(variantValue).map(([vendorKey, vendorValue]) => {
+      return Object.entries(
+        variantValue || {}
+      ).map(([vendorKey, vendorValue]) => {
         const { primary = 0, secondary = 0 } = vendorValue;
         return {
           name,
