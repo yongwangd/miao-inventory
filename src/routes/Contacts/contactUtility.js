@@ -13,7 +13,10 @@ export const parseTagFromLabel = label => {
   return tag;
 };
 
-export const exportContactInventory = contacts => {
+export const exportContactInventory = (
+  contacts,
+  filename = 'inventory.csv'
+) => {
   let csv = `Product,Variant,Vendor,Primary,Secondary,Total\n`;
 
   const variantStep = R.flatten(
@@ -53,7 +56,7 @@ export const exportContactInventory = contacts => {
 
   console.log(vendorStep, 'vendorStep');
 
-  const filename = 'inventory.csv';
+  // const filename = `${}inventory.csv`;
   if (!csv.match(/^data:text\/csv/i)) {
     csv = `data:text/csv;charset=utf-8,${csv}`;
   }

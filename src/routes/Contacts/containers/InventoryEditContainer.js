@@ -53,7 +53,11 @@ class InventoryEditContainer extends React.Component {
     variantsEditCopy: null
   };
 
-  exportInventory = () => exportContactInventory([this.props.contact]);
+  exportInventory = () =>
+    exportContactInventory(
+      [this.props.contact],
+      `${this.props.contact.name} - Inventory.csv`
+    );
 
   render() {
     const {
@@ -254,7 +258,15 @@ class InventoryEditContainer extends React.Component {
           >
             Add Variants
           </Button>
-          <a onClick={exportInventory}>Export</a>
+          {variantArray.length > 0 && (
+            <a
+              className="text-primary"
+              style={{ marginLeft: 20 }}
+              onClick={exportInventory}
+            >
+              Export
+            </a>
+          )}
 
           {vendorInEdit && (
             <VendorActionContainer
