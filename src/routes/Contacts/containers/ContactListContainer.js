@@ -267,11 +267,24 @@ class ContactListContainer extends Component {
         (R.isEmpty(activeTagKeys) ||
           R.all(key => (c.tagKeySet || {})[key], activeTagKeys)) &&
         (R.isEmpty(activeVariantTagKeys) ||
-          R.all(key => (c.variantTagKeySet || {})[key], activeVariantTagKeys)) 
-
+          R.all(
+            key => (c.variantTagKeySet || {})[key],
+            activeVariantTagKeys
+          )) &&
+        (R.isEmpty(activeVendorTagKeys) ||
+          R.intersection(
+            activeVendorTagKeys,
+            R.compose(
+              R.uniq,
+              R.flatten,
+              R.map(R.keys),
+              R.values,
+              R.prop('variantTagKeySet')
+            )(c)
+          ).length == activeVendorTagKeys.length)
     );
 
-    //FP implementation, kinda verbose
+    // FP implementation, kinda verbose
     // const filter = R.allPass([
     //   //   R.propEq("deleted", showOnlyDeleted),
     //   propContains(searchKey, contactColumns.map(R.prop('key'))),

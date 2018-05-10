@@ -40,7 +40,9 @@ class ContactCard extends React.Component {
       touchOnly,
       onRevertContact,
       completelyDeleteContact,
-      tags
+      tags,
+      variantTags,
+      vendorTags
     } = this.props;
     const { setContactColor, setHovering } = this;
     // const { name, age, email, phone, search} = props;
@@ -153,8 +155,8 @@ class ContactCard extends React.Component {
                   R.is(Object, info[config.key]) && !R.isEmpty(info[config.key])
               )
               .map(config => (
-                <div key={config.key}>
-                  <p
+                <div key={config.key} style={{ marginTop: 5 }}>
+                  <div
                     style={{
                       fontWeight: 'bold',
                       fontSize: 12,
@@ -162,7 +164,7 @@ class ContactCard extends React.Component {
                     }}
                   >
                     {config.label}
-                  </p>
+                  </div>
                   <span
                     style={{ color: colorObj.font, wordWrap: 'break-word' }}
                   >
@@ -175,38 +177,8 @@ class ContactCard extends React.Component {
                   </span>
                 </div>
               ))}
-            {R.is(Object, info.tagKeySet) &&
-              !R.isEmpty(info.tagKeySet) && (
-                <div>
-                  <p
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 12,
-                      color: colorObj.titleColor || '#AAAAAA'
-                    }}
-                  >
-                    {'Tags'}
-                  </p>
-                  <span
-                    style={{ color: colorObj.font, wordWrap: 'break-word' }}
-                  >
-                    <TagList
-                      color={colorObj.font}
-                      tags={R.keys(info.tagKeySet)
-                        .map(t => tags.find(tg => tg.key == t))
-                        .filter(x => x)}
-                    />
-                  </span>
-                </div>
-              )}
           </Col>
         </Row>
-        {info.downloadURL && (
-          <img
-            style={{ width: '100%', marginTop: 10 }}
-            src={info.downloadURL}
-          />
-        )}
       </Card>
     );
   }
