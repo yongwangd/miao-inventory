@@ -21,6 +21,7 @@ import {
   removeContactVariant
 } from '../../../fireQuery/contactsQuery';
 import VendorActionContainer from './VendorActionContainer';
+import { exportContactInventory } from '../contactUtility';
 
 const { Panel } = Collapse;
 
@@ -52,60 +53,7 @@ class InventoryEditContainer extends React.Component {
     variantsEditCopy: null
   };
 
-  exportInventory = () => {
-    const { contact } = this.props;
-
-    let csv = `Product,Variant,Vendor,Primary,Secondary,Total\n`;
-    const contacts = [contact];
-
-    const variantStep = R.flatten(
-      contacts.map(ct => {
-        const { name, variantTagKeySet } = ct;
-
-        return Object.entries(
-          variantTagKeySet
-        ).map(([variantKey, variantValue]) => ({
-          name,
-          variant: variantKey,
-          variantValue
-        }));
-      })
-    );
-
-    console.log('variant step', variantStep);
-
-    const vendorStep = R.flatten(
-      variantStep.map(vt => {
-        const { variant, name, variantValue } = vt;
-        return Object.entries(variantValue).map(([vendorKey, vendorValue]) => {
-          const { primary = 0, secondary = 0 } = vendorValue;
-          return {
-            name,
-            variant,
-            vendor: vendorKey,
-            primary,
-            secondary,
-            total: primary + secondary
-          };
-        });
-      })
-    );
-
-    csv += vendorStep.map(step => R.values(step).join(',')).join('\n');
-
-    console.log(vendorStep, 'vendorStep');
-
-    const filename = 'inventory.csv';
-    if (!csv.match(/^data:text\/csv/i)) {
-      csv = `data:text/csv;charset=utf-8,${csv}`;
-    }
-    const data = encodeURI(csv);
-
-    const link = document.createElement('a');
-    link.setAttribute('href', data);
-    link.setAttribute('download', filename);
-    link.click();
-  };
+  exportInventory = () => exportContactInventory([this.props.contact]);
 
   render() {
     const {
