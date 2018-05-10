@@ -13,6 +13,53 @@ export const parseTagFromLabel = label => {
   return tag;
 };
 
+export const downloadCSV = (csv, filename) => {
+  if (!csv.match(/^data:text\/csv/i)) {
+    csv = `data:text/csv;charset=utf-8,${csv}`;
+  }
+  const data = encodeURI(csv);
+
+  const link = document.createElement('a');
+  link.setAttribute('href', data);
+  link.setAttribute('download', filename);
+  link.click();
+};
+
+export const getContactInventorySummary = contact => {
+  let r = R.flatten(
+    R.values(contact.variantTagKeySet || {}).map(vendors => R.values(vendors))
+  ).filter(R.is(Object));
+  console.log('rrrr', r);
+  r = r.reduce(
+    (acc, cur) => ({
+      primary: acc.primary + cur.primary || 0,
+      secondary: acc.secondary + cur.secondary || 0
+    }),
+    { primary: 0, secondary: 0 }
+  );
+
+  const total = r.primary + r.secondary;
+  return {
+    primary: r.primary,
+    secondary: r.secondary,
+    total
+  };
+};
+
+export const exportContactSummary = (
+  contacts,
+  filename = 'inventory-summary.csv'
+) => {
+  let csv = `Product,Primary,Secondary,Total\n`;
+  csv += contacts
+    .map(ct => {
+      const su = getContactInventorySummary(ct);
+      return [ct.name, su.primary, su.secondary, su.total].join(',');
+    })
+    .join('\n');
+  downloadCSV(csv, filename);
+};
+
 export const exportContactInventory = (
   contacts,
   filename = 'inventory.csv'
@@ -58,16 +105,18 @@ export const exportContactInventory = (
 
   console.log(vendorStep, 'vendorStep');
 
-  // const filename = `${}inventory.csv`;
-  if (!csv.match(/^data:text\/csv/i)) {
-    csv = `data:text/csv;charset=utf-8,${csv}`;
-  }
-  const data = encodeURI(csv);
+  downloadCSV(csv, filename);
 
-  const link = document.createElement('a');
-  link.setAttribute('href', data);
-  link.setAttribute('download', filename);
-  link.click();
+  // const filename = `${}inventory.csv`;
+  // if (!csv.match(/^data:text\/csv/i)) {
+  //   csv = `data:text/csv;charset=utf-8,${csv}`;
+  // }
+  // const data = encodeURI(csv);
+
+  // const link = document.createElement('a');
+  // link.setAttribute('href', data);
+  // link.setAttribute('download', filename);
+  // link.click();
 };
 
 export const a = 4;

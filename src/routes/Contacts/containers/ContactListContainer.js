@@ -25,7 +25,7 @@ import contactColumns from '../../../properties/contactColumns';
 import { ContactTagInputContainer } from './TagInputContainer';
 import { ContactTagListHeaderContainer } from './TagListHeaderContainer';
 import InventoryEditContainer from './InventoryEditContainer';
-import { exportContactInventory } from '../contactUtility';
+import { exportContactInventory , exportContactSummary} from '../contactUtility';
 
 @connect(state => ({
   contacts: state.contactChunk.contacts,
@@ -393,16 +393,16 @@ class ContactListContainer extends Component {
               />
             </Tooltip>
           )}
-          <Tooltip title="Export Contacts">
+          <Tooltip title="Export Product Summary">
             <Icon
               type="download"
               className="fn-icon"
-              onClick={() => this.exportContacts(visibleContacts)}
+              onClick={() => exportContactSummary(visibleContacts)}
             />
           </Tooltip>
           <Tooltip title="Export Inventory">
             <Icon
-              type="download"
+              type="bar-chart"
               className="fn-icon"
               onClick={() => exportContactInventory(visibleContacts)}
             />
