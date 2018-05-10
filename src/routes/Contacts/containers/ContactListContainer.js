@@ -25,7 +25,10 @@ import contactColumns from '../../../properties/contactColumns';
 import { ContactTagInputContainer } from './TagInputContainer';
 import { ContactTagListHeaderContainer } from './TagListHeaderContainer';
 import InventoryEditContainer from './InventoryEditContainer';
-import { exportContactInventory , exportContactSummary} from '../contactUtility';
+import {
+  exportContactInventory,
+  exportContactSummary
+} from '../contactUtility';
 
 @connect(state => ({
   contacts: state.contactChunk.contacts,
@@ -340,7 +343,7 @@ class ContactListContainer extends Component {
             />
           </div>
 
-          {showEmailTextArea ? (
+          {/* {showEmailTextArea ? (
             <Tooltip title="Hide Emails">
               <Icon
                 onClick={() => this.setState({ showEmailTextArea: false })}
@@ -374,7 +377,7 @@ class ContactListContainer extends Component {
                 className="fn-icon"
               />
             </Tooltip>
-          )}
+          )} */}
 
           {showOnlyDeleted ? (
             <Tooltip title="Show Active Contacts">
