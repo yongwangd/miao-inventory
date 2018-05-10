@@ -284,50 +284,8 @@ class ContactListContainer extends Component {
           ).length == activeVendorTagKeys.length)
     );
 
-    // FP implementation, kinda verbose
-    // const filter = R.allPass([
-    //   //   R.propEq("deleted", showOnlyDeleted),
-    //   propContains(searchKey, contactColumns.map(R.prop('key'))),
-    //   R.either(
-    //     R.always(R.isEmpty(activeColorIds)),
-    //     R.compose(
-    //       R.flip(R.contains)(activeColorIds),
-    //       // id => activeColorIds.includes(id),
-    //       // id => R.contains(id, activeColorIds),
-    //       R.defaultTo('white'),
-    //       R.prop('color')
-    //     )
-    //   ),
-    //   R.either(
-    //     R.always(R.isEmpty(activeTagKeys)),
-    //     R.compose(
-    //       set => R.all(key => set[key], activeTagKeys),
-    //       R.defaultTo({}),
-    //       R.prop('tagKeySet')
-    //     )
-    //   ),
-    //   R.either(
-    //     R.always(R.isEmpty(activeVariantTagKeys)),
-    //     R.compose(
-    //       set => {
-    //         console.log(set);
-    //         const r = R.all(key => set[key], activeVariantTagKeys);
-    //         console.log(r, 'result');
-    //         return r;
-    //       },
-    //       R.defaultTo({}),
-    //       R.prop('variantTagKeySet')
-    //     )
-    //   )
-    // ]);
-
-    // const vs = R.filter(filter, contacts);
-
     return (
       <Spin spinning={dataLoading} size="large" tip="Loading Contacts">
-        {JSON.stringify(activeTagKeys)}
-        {JSON.stringify(activeVariantTagKeys)}
-        {JSON.stringify(activeVendorTagKeys)}
         <div className="row">
           {/* <Tag onClick={() => this.setState({ showEventModal: true })}>
             Log</Tag> */}
