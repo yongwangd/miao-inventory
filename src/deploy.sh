@@ -1,7 +1,7 @@
 yarn build
 cd dist
 
-echo 'whitemiao.us' >> CNAME
+# echo 'whitemiao.us' >> CNAME
 
 # git init
 # git add .
@@ -12,3 +12,7 @@ echo 'whitemiao.us' >> CNAME
 # firebase use miaocontacts-production
 # firebase deploy
 # firebase use miaocontacts
+
+firebase use awesome-miao
+firebase deploy  --only hosting
+firebase use miao-inventory

@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 exports.tagUpdateLog = exports.tagDeleteLog = exports.tagCreateLog = exports.contactDeleteLog = exports.contactUpdateLog = exports.contactCreateLog = exports.deleteTagFromContacts = exports.cleanContactTags = exports.addMessage = undefined;
 
