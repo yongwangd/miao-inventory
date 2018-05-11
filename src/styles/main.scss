@@ -260,7 +260,8 @@ a:hover {
   color: $gray;
   span {
     font-weight: normal;
-    color: black;
+    font-size:14px;
+    margin-left:10px
   }
 }
 
@@ -296,3 +297,30 @@ a:hover {
     font-family: system-ui;
   }
 }
+
+.flex-row-intermedia {
+  display: flex;
+  flex: 1;
+}
+
+.inventory-count-container{
+  display: flex;
+  font-weight: bold;
+  font-size:17px;
+  .inventory-count {
+    display: flex;
+    flex:1;
+    a {
+      flex: 2
+    }
+    span {
+      font-size: 17px;
+      flex: 1;
+      margin-left:15px;
+      margin-right: 25px;
+    }
+  }
+
+}
+
+

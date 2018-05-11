@@ -21,7 +21,11 @@ import {
   removeContactVariant
 } from '../../../fireQuery/contactsQuery';
 import VendorActionContainer from './VendorActionContainer';
-import { exportContactInventory } from '../contactUtility';
+import {
+  exportContactInventory,
+  getContactInventorySummary
+} from '../contactUtility';
+import InventoryCount from '../components/InventoryCount';
 
 const { Panel } = Collapse;
 
@@ -68,6 +72,8 @@ class InventoryEditContainer extends React.Component {
     const { contact, variantTags, vendorTags } = this.props;
     const { variantTagKeySet } = contact;
     const { exportInventory } = this;
+
+    const summary = getContactInventorySummary(contact);
 
     // const variants = getTagArray(variantTags, variantTagKeySet);
     const variantArray = Object.keys(variantTagKeySet || {}).map(key => ({
@@ -130,20 +136,45 @@ class InventoryEditContainer extends React.Component {
         );
 
         return (
-          <div>
-            <span>{variant.label}</span>
-            <span style={{ float: 'right' }}>
+          <div style={{ display: 'flex' }}>
+            <span
+              className="text-secondary"
+              style={{
+                fontWeight: 'bold',
+                fontSize: 16
+              }}
+            >
+              {variant.label}
+            </span>
+            <span
+              style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}
+            >
               <span className="variant-header-span">
                 Primary:
-                <span>{primary}</span>
+                <span
+                  className="badge badge-light"
+                  style={{ display: 'inline-block', width: 30 }}
+                >
+                  {primary}
+                </span>
               </span>
               <span className="variant-header-span">
                 Secondary:
-                <span>{secondary}</span>
+                <span
+                  className="badge badge-light"
+                  style={{ display: 'inline-block', width: 30 }}
+                >
+                  {secondary}
+                </span>
               </span>
               <span className="variant-header-span">
                 Total:
-                <span>{total}</span>
+                <span
+                  className="badge badge-light"
+                  style={{ display: 'inline-block', width: 30 }}
+                >
+                  {total}
+                </span>
               </span>
               <Dropdown overlay={menu}>
                 <Icon
@@ -248,6 +279,9 @@ class InventoryEditContainer extends React.Component {
     return (
       <Spin spinning={false}>
         <div>
+          <div style={{ marginBottom: 15 }}>
+            <InventoryCount {...summary} />
+          </div>
           {renderVariants(variantArray)}
 
           <Button

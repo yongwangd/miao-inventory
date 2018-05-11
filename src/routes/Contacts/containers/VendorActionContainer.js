@@ -16,6 +16,7 @@ import {
   MAROON,
   BLACK
 } from '../../../properties/Colors';
+import InventoryCount from '../components/InventoryCount';
 
 class VendorActionContainer extends React.Component {
   state = {
