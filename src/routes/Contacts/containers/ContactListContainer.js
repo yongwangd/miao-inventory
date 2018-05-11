@@ -209,7 +209,7 @@ class ContactListContainer extends Component {
         return str;
       })
       .join('\n');
-    const filename = 'contacts.csv';
+    const filename = 'products.csv';
     if (!csv.match(/^data:text\/csv/i)) {
       csv = `data:text/csv;charset=utf-8,${csv}`;
     }
@@ -346,7 +346,7 @@ class ContactListContainer extends Component {
             />
 
             <Tag onClick={() => this.setState({ showPrintVendorModal: true })}>
-              Print Vendor
+              Export by Vendor
             </Tag>
 
             {showPrintVendorModal && (
@@ -362,7 +362,12 @@ class ContactListContainer extends Component {
                       <span>{vt.label}</span>
                     </div>
                     <a
-                      onClick={() => exportContactByVendor(contacts, vt.key)}
+                      onClick={() =>
+                        exportContactByVendor(
+                          contacts,
+                          vt.key,
+                          `${vt.key}-vendor`
+                        )}
                       className="text-primary"
                     >
                       Export

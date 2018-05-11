@@ -4,7 +4,7 @@ import { NAVY } from '../../../properties/Colors';
 
 class VendorActionItem extends React.Component {
   state = {
-    value: 0
+    value: null
   };
 
   onValueChange = value => this.setState({ value });
@@ -34,7 +34,11 @@ class VendorActionItem extends React.Component {
             style={{ width: 100, marginRight: 15 }}
             value={value}
             onChange={onValueChange}
-            onKeyPress={e =>
+            ref={elm => {
+              console.log(elm);
+              this.inputElm = elm;
+            }}
+            onKeyDown={e =>
               e.key === 'Enter' && valid(value) && onSubmit(value)}
           />
           <Button

@@ -1,5 +1,10 @@
 import R from 'ramda';
 
+const dateString = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+};
+
 export const parseTagFromLabel = label => {
   const cleanLabel = label
     .replace(/\W/g, '')
@@ -21,7 +26,7 @@ export const downloadCSV = (csv, filename) => {
 
   const link = document.createElement('a');
   link.setAttribute('href', data);
-  link.setAttribute('download', filename);
+  link.setAttribute('download', `${filename}_${dateString()}.csv`);
   link.click();
 };
 
@@ -61,8 +66,6 @@ const getContactVendorArray = contacts => {
     })
   );
 
-  console.log('variant step', variantStep);
-
   const vendorStep = R.flatten(
     variantStep.map(vt => {
       const { variant, name, variantValue } = vt;
@@ -96,7 +99,7 @@ const exportVendorStep = (vendorStep, filename) => {
 export const exportContactByVendor = (
   contacts,
   vendorKey,
-  filename = 'vendor.csv'
+  filename = 'vendor'
 ) => {
   const vendorStep = getContactVendorArray(contacts).filter(
     ven => ven.vendor == vendorKey
@@ -106,7 +109,7 @@ export const exportContactByVendor = (
 
 export const exportContactSummary = (
   contacts,
-  filename = 'inventory-summary.csv'
+  filename = 'inventory-summary'
 ) => {
   let csv = `Product,Primary,Secondary,Total\n`;
   csv += contacts
@@ -118,10 +121,7 @@ export const exportContactSummary = (
   downloadCSV(csv, filename);
 };
 
-export const exportContactInventory = (
-  contacts,
-  filename = 'inventory.csv'
-) => {
+export const exportContactInventory = (contacts, filename = 'inventory') => {
   const vendorStep = getContactVendorArray(contacts);
   exportVendorStep(vendorStep, filename);
 };

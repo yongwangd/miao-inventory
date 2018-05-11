@@ -1,7 +1,7 @@
-import { connect } from "react-redux";
-import React, { Component } from "react";
-import validator from "validator";
-import PropTypes from "prop-types";
+import { connect } from 'react-redux';
+import React, { Component } from 'react';
+import validator from 'validator';
+import PropTypes from 'prop-types';
 import {
   Collapse,
   Divider,
@@ -18,20 +18,19 @@ import {
   Modal,
   Icon,
   Input
-} from "antd";
-import LabelFieldSet from "../../../commonCmps/LabelFieldSet";
-import simpleForm from "../../../lib/simpleForm";
+} from 'antd';
+import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
+import simpleForm from '../../../lib/simpleForm';
 // import ImageViewer from "../../../commonCmps/ImageViewer";
 // import { getBusinessCardRef } from "../../../fireQuery/fireConnection";
-import createUUID from "../../../lib/uuidTool";
+import createUUID from '../../../lib/uuidTool';
 import TagInputContainer, {
   ContactTagInputContainer
-} from "../containers/TagInputContainer";
-import { a } from "../contactUtility";
-import { actions } from "../../../store/authReducer";
-import tagsQuery from "../../../fireQuery/tagsQuery";
-import { VariantTagInputContainer } from "./TagInputContainer";
-
+} from '../containers/TagInputContainer';
+import { a } from '../contactUtility';
+import { actions } from '../../../store/authReducer';
+import tagsQuery from '../../../fireQuery/tagsQuery';
+import { VariantTagInputContainer } from './TagInputContainer';
 
 const { Panel } = Collapse;
 
@@ -46,23 +45,23 @@ const validation = () => {
 
 const variantColumns = [
   {
-    title: "Vendor",
-    dataIndex: "label",
-    key: "label"
+    title: 'Vendor',
+    dataIndex: 'label',
+    key: 'label'
   },
   {
-    title: "Primary",
-    dataIndex: "primary",
-    key: "primary",
+    title: 'Primary',
+    dataIndex: 'primary',
+    key: 'primary',
     render: (text, record) => {
       const menu = (
         <div>
           <div>
-            <a onClick={() => message.info("In Stock")}>New Arrivals: </a>
+            <a onClick={() => message.info('In Stock')}>New Arrivals: </a>
             <InputNumber min={0} defaultValue={0} />
           </div>
 
-          <a onClick={() => message.info("In Move to S")}>
+          <a onClick={() => message.info('In Move to S')}>
             Move to Secondary Storage
           </a>
           <a>Reset</a>
@@ -70,7 +69,7 @@ const variantColumns = [
       );
       return (
         <Popover content={menu} title="Actions">
-          <a className="ant-dropdown-link" style={{ color: "blue" }}>
+          <a className="ant-dropdown-link" style={{ color: 'blue' }}>
             {text}
           </a>
         </Popover>
@@ -78,13 +77,13 @@ const variantColumns = [
     }
   },
   {
-    title: "Secondary",
-    dataIndex: "secondary",
-    key: "secondary"
+    title: 'Secondary',
+    dataIndex: 'secondary',
+    key: 'secondary'
   },
   {
-    title: "Actions",
-    key: "action",
+    title: 'Actions',
+    key: 'action',
     render: (text, record) => (
       <span>
         <a>
@@ -98,11 +97,11 @@ const variantColumns = [
 @connect()
 @simpleForm({
   fields: [
-    "name",
-    "comment",
+    'name',
+    'comment',
     // "inStock",
-    "tagKeySet",
-    "variantTagKeySet"
+    'tagKeySet',
+    'variantTagKeySet'
     // "downloadURL",
     // "cardImageName"
   ],
@@ -119,7 +118,7 @@ class ContactItemForm extends Component {
 
     preSubmit();
     if (!isFormValid) {
-      message.error("Information is not valid");
+      message.error('Information is not valid');
       return;
     }
 
@@ -135,65 +134,20 @@ class ContactItemForm extends Component {
     const {
       comment,
       hasSubmitted,
-      okText = "Ok",
-      cancelText = "Cancel",
+      okText = 'Ok',
+      cancelText = 'Cancel',
       onCancel,
       isFormValid,
       showDelete,
       onDelete,
       loading = false,
-      loadingText = "Loading",
+      loadingText = 'Loading',
       tagKeySet = {},
       variantTagKeySet = {}
     } = props;
     const { uploadLoading, edittingTags } = this.state;
 
-    const fieldArray = ["name"];
-
-    const variants = [
-      {
-        id: "12",
-        label: "12",
-        vendors: [
-          {
-            key: "amazon",
-            label: "Amazon",
-            primary: 13,
-            secondary: 10
-          },
-          {
-            key: "ebay",
-            label: "Ebay",
-            primary: 0,
-            secondary: 20
-          },
-          {
-            key: "walmart",
-            label: "Walmart",
-            primary: 20,
-            secondary: 0
-          }
-        ]
-      },
-      {
-        id: "14",
-        label: "14",
-        vendors: [
-          {
-            key: "amazon",
-            label: "Amazon",
-            primary: 13,
-            secondary: 10
-          },
-          {
-            key: "walmart",
-            label: "Walmart",
-            primary: 20,
-            secondary: 0
-          }
-        ]
-      }
-    ];
+    const fieldArray = ['name'];
 
     const capitalize = str => str.slice(0, 1).toUpperCase() + str.slice(1);
 
@@ -208,55 +162,6 @@ class ContactItemForm extends Component {
         <input className="form-control" {...props[fieldName]} />
       </LabelFieldSet>
     ));
-
-    const renderVariants = variants => {
-      console.log("render");
-
-      const getHeader = variant => (
-        <div>
-          <span className="bold">{variant.label}</span>
-          <span className="variant-header-span">
-            Primary:
-            <span>14</span>
-          </span>
-          <span className="variant-header-span">
-            Secondary:
-            <span>13</span>
-          </span>
-          <span className="variant-header-span">
-            Total:
-            <span>27</span>
-          </span>
-        </div>
-      );
-
-      return (
-        <Collapse bordered={false} defaultActiveKey={["1"]}>
-          {variants.map(variant => (
-            <Panel key={variant.id} header={getHeader(variant)}>
-              <Table
-                size={"small"}
-                pagination={false}
-                columns={variantColumns}
-                dataSource={variant.vendors}
-              />
-              <Button
-                size="small"
-                type="primary"
-                style={{ marginTop: 15 }}
-                onClick={() =>
-                  Modal.warning({
-                    title: "This is a warning message",
-                    content: "some messages...some messages..."
-                  })}
-              >
-                Add Vendor
-              </Button>
-            </Panel>
-          ))}
-        </Collapse>
-      );
-    };
 
     return (
       <Spin tip={loadingText} spinning={uploadLoading || loading}>
@@ -274,7 +179,7 @@ class ContactItemForm extends Component {
             label="Tags"
             err={(hasSubmitted || tagKeySet.touched) && tagKeySet.error}
           >
-            <div style={{ borderBottom: "1px solid lightgray" }}>
+            <div style={{ borderBottom: '1px solid lightgray' }}>
               <ContactTagInputContainer
                 // tagQuery={tagsQuery("variant")}
                 selectedTagSet={tagKeySet.value}
@@ -282,43 +187,6 @@ class ContactItemForm extends Component {
               />
             </div>
           </LabelFieldSet>
-
-          <LabelFieldSet
-            label="VariantTags"
-            err={
-              (hasSubmitted || variantTagKeySet.touched) &&
-              variantTagKeySet.error
-            }
-          >
-            <div style={{ borderBottom: "1px solid lightgray" }}>
-              <VariantTagInputContainer
-                // tagQuery={tagsQuery("variant")}
-                selectedTagSet={variantTagKeySet.value}
-                onTagSetChange={keySet =>
-                  variantTagKeySet.onChange(undefined, keySet)}
-              />
-            </div>
-          </LabelFieldSet>
-
-          <Button onClick={() => this.setState({ edittingTags: true })}>
-            Edit Variant
-          </Button>
-          {edittingTags && (
-            <Modal
-              title={"Edit Variants"}  
-              visible={edittingTags}
-              onCancel={() => this.setState({ edittingTags: false })}
-            >
-              <VariantTagInputContainer
-                // tagQuery={tagsQuery("variant")}
-                selectedTagSet={variantTagKeySet.value}
-                onTagSetChange={keySet =>
-                  variantTagKeySet.onChange(undefined, keySet)}
-              />
-            </Modal>
-          )}
-
-          {renderVariants(variants)}
 
           <Button
             style={{ marginTop: 10 }}
@@ -339,7 +207,7 @@ class ContactItemForm extends Component {
               okText="Yes"
               cancelText="No"
             >
-              <Button style={{ float: "right" }} type="danger" ghost>
+              <Button style={{ float: 'right' }} type="danger" ghost>
                 Delete
               </Button>
             </Popconfirm>

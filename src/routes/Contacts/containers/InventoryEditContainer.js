@@ -54,10 +54,7 @@ class InventoryEditContainer extends React.Component {
   };
 
   exportInventory = () =>
-    exportContactInventory(
-      [this.props.contact],
-      `${this.props.contact.name} - Inventory.csv`
-    );
+    exportContactInventory([this.props.contact], `${this.props.contact.name}`);
 
   render() {
     const {
@@ -165,12 +162,19 @@ class InventoryEditContainer extends React.Component {
       };
 
       const renderVendor = (vendor, variant) => (
-        <tr>
+        <tr
+          style={{ cursor: 'pointer' }}
+          onClick={() =>
+            this.setState({
+              vendorInEdit: vendor,
+              vendorInEditVariant: variant
+            })}
+        >
           {tableColumns.map(col => (
             <td key={col.key}>{vendor[col.dataIndex] || '0'}</td>
           ))}
           <td>{(vendor.primary || 0) + (vendor.secondary || 0)}</td>
-          <td>
+          {/* <td>
             <a
               onClick={() =>
                 this.setState({
@@ -180,7 +184,7 @@ class InventoryEditContainer extends React.Component {
             >
               Edit
             </a>
-          </td>
+          </td> */}
         </tr>
       );
 
@@ -221,7 +225,7 @@ class InventoryEditContainer extends React.Component {
                             </th>
                           ))}
                           <th scope="col">Total</th>
-                          <th scope="col">Actions</th>
+                          {/* <th scope="col">Actions</th> */}
                         </tr>
                       </thead>
                       <tbody>
