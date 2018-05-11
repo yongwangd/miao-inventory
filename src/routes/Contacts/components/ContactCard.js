@@ -17,6 +17,7 @@ import TagList from './TagList';
 import columns from '../../../properties/contactColumns';
 import SearchHighlight from '../../../commonCmps/SearchHighlight';
 import { stopAsyncValidation } from 'redux-form';
+import { getContactVendors } from '../contactUtility';
 
 class ContactCard extends React.Component {
   constructor(props) {
@@ -148,11 +149,21 @@ class ContactCard extends React.Component {
                 key: 'variantTagKeySet',
                 label: 'Variants',
                 source: variantTags
+              },
+              {
+                key: 'venderTagKeySet',
+                keySet: getContactVendors(info).reduce(
+                  (acc, cur) => ({ ...acc, [cur]: true }),
+                  {}
+                ),
+                label: 'Vendors',
+                source: vendorTags
               }
             ]
               .filter(
                 config =>
-                  R.is(Object, info[config.key]) && !R.isEmpty(info[config.key])
+                  R.is(Object, config.keySet || info[config.key]) &&
+                  !R.isEmpty(config.keySet || info[config.key])
               )
               .map(config => (
                 <div key={config.key} style={{ marginTop: 5 }}>
@@ -170,7 +181,7 @@ class ContactCard extends React.Component {
                   >
                     <TagList
                       color={colorObj.font}
-                      tags={R.keys(info[config.key])
+                      tags={R.keys(config.keySet || info[config.key])
                         .map(t => config.source.find(tg => tg.key == t))
                         .filter(x => x)}
                     />

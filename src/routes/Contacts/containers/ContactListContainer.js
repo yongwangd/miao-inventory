@@ -28,7 +28,8 @@ import InventoryEditContainer from './InventoryEditContainer';
 import {
   exportContactInventory,
   exportContactSummary,
-  exportContactByVendor
+  exportContactByVendor,
+  getContactVendors
 } from '../contactUtility';
 
 @connect(state => ({
@@ -281,13 +282,14 @@ class ContactListContainer extends Component {
         (R.isEmpty(activeVendorTagKeys) ||
           R.intersection(
             activeVendorTagKeys,
-            R.compose(
-              R.uniq,
-              R.flatten,
-              R.map(R.keys),
-              R.values,
-              R.prop('variantTagKeySet')
-            )(c)
+            getContactVendors(c)
+            // R.compose(
+            //   R.uniq,
+            //   R.flatten,
+            //   R.map(R.keys),
+            //   R.values,
+            //   R.prop('variantTagKeySet')
+            // )(c)
           ).length == activeVendorTagKeys.length)
     );
 
@@ -498,6 +500,7 @@ class ContactListContainer extends Component {
           <ContactList
             tags={tags}
             variantTags={variantTags}
+            vendorTags={vendorTags}
             touchOnly={touchOnly}
             search={searchKey}
             contacts={visibleContacts}

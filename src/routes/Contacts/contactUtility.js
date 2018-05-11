@@ -126,4 +126,13 @@ export const exportContactInventory = (contacts, filename = 'inventory') => {
   exportVendorStep(vendorStep, filename);
 };
 
+export const getContactVendors = contact =>
+  R.compose(
+    R.uniq,
+    R.flatten,
+    R.map(R.keys),
+    R.values,
+    R.prop('variantTagKeySet')
+  )(contact);
+
 export const a = 4;
