@@ -46,26 +46,7 @@ export const getContactInventorySummary = contact => {
   };
 };
 
-export const exportContactSummary = (
-  contacts,
-  filename = 'inventory-summary.csv'
-) => {
-  let csv = `Product,Primary,Secondary,Total\n`;
-  csv += contacts
-    .map(ct => {
-      const su = getContactInventorySummary(ct);
-      return [ct.name, su.primary, su.secondary, su.total].join(',');
-    })
-    .join('\n');
-  downloadCSV(csv, filename);
-};
-
-export const exportContactInventory = (
-  contacts,
-  filename = 'inventory.csv'
-) => {
-  let csv = `Product,Variant,Vendor,Primary,Secondary,Total\n`;
-
+const getContactVendorArray = contacts => {
   const variantStep = R.flatten(
     contacts.map(ct => {
       const { name, variantTagKeySet } = ct;
@@ -101,22 +82,48 @@ export const exportContactInventory = (
     })
   );
 
+  return vendorStep;
+};
+
+const exportVendorStep = (vendorStep, filename) => {
+  console.log('vendorstep', vendorStep);
+  let csv = `Product,Variant,Vendor,Primary,Secondary,Total\n`;
   csv += vendorStep.map(step => R.values(step).join(',')).join('\n');
-
   console.log(vendorStep, 'vendorStep');
-
   downloadCSV(csv, filename);
+};
 
-  // const filename = `${}inventory.csv`;
-  // if (!csv.match(/^data:text\/csv/i)) {
-  //   csv = `data:text/csv;charset=utf-8,${csv}`;
-  // }
-  // const data = encodeURI(csv);
+export const exportContactByVendor = (
+  contacts,
+  vendorKey,
+  filename = 'vendor.csv'
+) => {
+  const vendorStep = getContactVendorArray(contacts).filter(
+    ven => ven.vendor == vendorKey
+  );
+  exportVendorStep(vendorStep, filename);
+};
 
-  // const link = document.createElement('a');
-  // link.setAttribute('href', data);
-  // link.setAttribute('download', filename);
-  // link.click();
+export const exportContactSummary = (
+  contacts,
+  filename = 'inventory-summary.csv'
+) => {
+  let csv = `Product,Primary,Secondary,Total\n`;
+  csv += contacts
+    .map(ct => {
+      const su = getContactInventorySummary(ct);
+      return [ct.name, su.primary, su.secondary, su.total].join(',');
+    })
+    .join('\n');
+  downloadCSV(csv, filename);
+};
+
+export const exportContactInventory = (
+  contacts,
+  filename = 'inventory.csv'
+) => {
+  const vendorStep = getContactVendorArray(contacts);
+  exportVendorStep(vendorStep, filename);
 };
 
 export const a = 4;

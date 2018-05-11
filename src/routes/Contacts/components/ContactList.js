@@ -1,20 +1,20 @@
-import React from "react";
-import { Col } from "antd";
-import Masonry from "react-masonry-component";
-import VisibilitySensor from "react-visibility-sensor";
-import ContactCard from "./ContactCard";
+import React from 'react';
+import { Col } from 'antd';
+import Masonry from 'react-masonry-component';
+import VisibilitySensor from 'react-visibility-sensor';
+import ContactCard from './ContactCard';
 
 export default class ContactList extends React.Component {
   state = {
-    perPage: 6,
-    visibleCount: 12,
+    perPage: 12,
+    visibleCount: 20,
     loadedAll: false
   };
 
   componentWillReceiveProps(nextProps) {
     console.log(this.props.contacts.length, nextProps.contacts.length);
     if (this.props.contacts.length != nextProps.contacts.length) {
-      console.log("reset state, !!!!!!!!!");
+      console.log('reset state, !!!!!!!!!');
       this.setState({
         loadedAll: false,
         visibleCount: 12
@@ -36,10 +36,10 @@ export default class ContactList extends React.Component {
       isVisible
     });
     if (isVisible) {
-      console.log("can see it, load more");
+      console.log('can see it, load more');
       this.loadMore();
     } else {
-      console.log("cannot see nothing");
+      console.log('cannot see nothing');
     }
   };
 
@@ -67,16 +67,16 @@ export default class ContactList extends React.Component {
     const loadedCts = contacts.slice(0, visibleCount);
 
     return (
-      <div style={{ width: "100%" }}>
-        {/*<div style={{position: 'fixed', background: 'white', zIndex:100}}>{this.state.visibleCount}</div> */}
+      <div style={{ width: '100%' }}>
+        {/* <div style={{position: 'fixed', background: 'white', zIndex:100}}>{this.state.visibleCount}</div> */}
         <Masonry
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
           options={{ transitionDuration: 100 }}
         >
           {loadedCts.map(ct => (
             <Col key={ct._id} xs={24} sm={12} md={8} lg={6} xl={4}>
-              {" "}
-              <ContactCard {...rest} info={ct} />{" "}
+              {' '}
+              <ContactCard {...rest} info={ct} />{' '}
             </Col>
           ))}
 

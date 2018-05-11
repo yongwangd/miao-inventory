@@ -27,7 +27,8 @@ import { ContactTagListHeaderContainer } from './TagListHeaderContainer';
 import InventoryEditContainer from './InventoryEditContainer';
 import {
   exportContactInventory,
-  exportContactSummary
+  exportContactSummary,
+  exportContactByVendor
 } from '../contactUtility';
 
 @connect(state => ({
@@ -56,7 +57,8 @@ class ContactListContainer extends Component {
     activeTagKeys: [],
     activeVariantTagKeys: [],
     activeVendorTagKeys: [],
-    showTagContainer: false
+    showTagContainer: false,
+    showPrintVendorModal: false
   };
 
   onSearchChange = evt =>
@@ -259,7 +261,8 @@ class ContactListContainer extends Component {
       activeVendorTagKeys,
       showEventLogModal,
       showTrafficModal,
-      showTagContainer
+      showTagContainer,
+      showPrintVendorModal
     } = this.state;
 
     const visibleContacts = contacts.filter(
@@ -341,6 +344,33 @@ class ContactListContainer extends Component {
                 this.setState({ activeVendorTagKeys: keys })}
               // tags={tags}
             />
+
+            <Tag onClick={() => this.setState({ showPrintVendorModal: true })}>
+              Print Vendor
+            </Tag>
+
+            {showPrintVendorModal && (
+              <Modal
+                title="Export Inventory by Vendor"
+                visible={showPrintVendorModal}
+                onCancel={() => this.setState({ showPrintVendorModal: false })}
+                footer={null}
+              >
+                {vendorTags.map(vt => (
+                  <div className="row" style={{ padding: 3 }}>
+                    <div className="col-10">
+                      <span>{vt.label}</span>
+                    </div>
+                    <a
+                      onClick={() => exportContactByVendor(contacts, vt.key)}
+                      className="text-primary"
+                    >
+                      Export
+                    </a>
+                  </div>
+                ))}
+              </Modal>
+            )}
           </div>
 
           {/* {showEmailTextArea ? (
