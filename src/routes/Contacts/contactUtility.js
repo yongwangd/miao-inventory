@@ -31,14 +31,14 @@ export const downloadCSV = (csv, filename) => {
 };
 
 export const getContactInventorySummary = contact => {
-  let r = R.flatten(
+  const temp = R.flatten(
     R.values(contact.variantTagKeySet || {}).map(vendors => R.values(vendors))
   ).filter(R.is(Object));
-  console.log('rrrr', r);
-  r = r.reduce(
+  console.log('rrrr', temp);
+  const r = temp.reduce(
     (acc, cur) => ({
-      primary: acc.primary + cur.primary || 0,
-      secondary: acc.secondary + cur.secondary || 0
+      primary: acc.primary + (cur.primary || 0),
+      secondary: acc.secondary + (cur.secondary || 0)
     }),
     { primary: 0, secondary: 0 }
   );

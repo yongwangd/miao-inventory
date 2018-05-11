@@ -221,7 +221,11 @@ class InventoryEditContainer extends React.Component {
 
       return (
         <div>
-          {variantArray.length == 0 && <p>No Variants</p>}
+          {variantArray.length == 0 && (
+            <p className="text-danger" style={{ fontSize: 18 }}>
+              No Variants
+            </p>
+          )}
           <Collapse defaultActiveKey={['1']}>
             {variantArray != null &&
               variantArray.length > 0 &&
@@ -279,9 +283,11 @@ class InventoryEditContainer extends React.Component {
     return (
       <Spin spinning={false}>
         <div>
-          <div style={{ marginBottom: 15 }}>
-            <InventoryCount {...summary} />
-          </div>
+          {variantArray.length > 0 && (
+            <div style={{ marginBottom: 15 }}>
+              <InventoryCount {...summary} />
+            </div>
+          )}
           {renderVariants(variantArray)}
 
           <Button
