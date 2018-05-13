@@ -5,11 +5,7 @@ import PropTypes from 'prop-types';
 import { Tag, Modal, Tabs, message, Icon, Popconfirm, Input } from 'antd';
 import TagListHeader from '../components/TagListHeader';
 import { toggleArrayItem } from '../../../lib/littleFn';
-import tagsQuery, {
-  createContactTag,
-  updateContactTagById,
-  deleteContactTagById
-} from '../../../fireQuery/tagsQuery';
+import tagsQuery from '../../../fireQuery/tagsQuery';
 import SimpleInputButton from '../../../commonCmps/SimpleInputButton';
 import { parseTagFromLabel } from '../contactUtility';
 import TagInputContainer from '../containers/TagInputContainer';
@@ -77,10 +73,11 @@ class TagListHeaderContainer extends Component {
 
   handleKeyPress = e => {
     if (e.key !== 'Enter') return;
+    const { tagsQuery } = this.props;
     const { tagInEdit, tempLabel } = this.state;
     if (this.editErrorMsg(tagInEdit.label, tempLabel) != null) return;
 
-    updateContactTagById(tagInEdit._id, { label: tempLabel }).then(r => {
+    tagsQuery.updateTagById(tagInEdit._id, { label: tempLabel }).then(r => {
       message.success(`Tag ${tagInEdit.label} changed to ${tempLabel}`);
       this.setState({
         tagInEdit: null,

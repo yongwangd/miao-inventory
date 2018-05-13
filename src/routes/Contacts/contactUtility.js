@@ -30,6 +30,15 @@ export const downloadCSV = (csv, filename) => {
   link.click();
 };
 
+export const getContactVendors = contact =>
+  R.compose(
+    R.uniq,
+    R.flatten,
+    R.map(R.keys),
+    R.values,
+    R.prop('variantTagKeySet')
+  )(contact);
+
 export const getContactInventorySummary = contact => {
   const temp = R.flatten(
     R.values(contact.variantTagKeySet || {}).map(vendors => R.values(vendors))
@@ -107,6 +116,53 @@ export const exportContactByVendor = (
   exportVendorStep(vendorStep, filename);
 };
 
+export const exportContactByMultipleVendors = (contacts, vendorKeys) => {
+  let csv = `Product,Variant,${vendorKeys.join(',')},Total\n`;
+
+  const variantStep = R.flatten(
+    contacts.map(ct => {
+      const { name, variantTagKeySet } = ct;
+
+      return Object.entries(
+        variantTagKeySet || {}
+      ).map(([variantKey, variantValue]) => ({
+        name,
+        variant: variantKey,
+        variantValue
+      }));
+    })
+  );
+
+  const resultArray = variantStep
+    .filter(
+      vs => R.intersection(R.keys(vs.variantValue), vendorKeys).length > 0
+    )
+    .map(ct => {
+      const { name, variant, variantValue } = ct;
+
+      const toReturn = {
+        name,
+        variant
+      };
+
+      R.forEach(
+        vk =>
+          (toReturn[vk] = R.add(
+            R.pathOr(0, [vk, 'primary'], variantValue),
+            R.pathOr(0, [vk, 'secondary'], variantValue)
+          )),
+        vendorKeys
+      );
+
+      toReturn.total = vendorKeys.reduce((acc, cur) => acc + toReturn[cur], 0);
+
+      return toReturn;
+    });
+
+  csv += resultArray.map(r => R.values(r).join(',')).join('\n');
+  downloadCSV(csv, vendorKeys.join('-'));
+};
+
 export const exportContactSummary = (
   contacts,
   filename = 'inventory-summary'
@@ -125,14 +181,5 @@ export const exportContactInventory = (contacts, filename = 'inventory') => {
   const vendorStep = getContactVendorArray(contacts);
   exportVendorStep(vendorStep, filename);
 };
-
-export const getContactVendors = contact =>
-  R.compose(
-    R.uniq,
-    R.flatten,
-    R.map(R.keys),
-    R.values,
-    R.prop('variantTagKeySet')
-  )(contact);
 
 export const a = 4;

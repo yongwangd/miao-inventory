@@ -22,14 +22,18 @@ import columns from '../../../properties/contactColumns';
 import EventLogContainer from '../../EventLog/components/EventLogContainer';
 import ContactList from '../components/ContactList';
 import contactColumns from '../../../properties/contactColumns';
-import { ContactTagInputContainer } from './TagInputContainer';
+import {
+  ContactTagInputContainer,
+  VendorTagInputContainer
+} from './TagInputContainer';
 import { ContactTagListHeaderContainer } from './TagListHeaderContainer';
 import InventoryEditContainer from './InventoryEditContainer';
 import {
   exportContactInventory,
   exportContactSummary,
   exportContactByVendor,
-  getContactVendors
+  getContactVendors,
+  exportContactByMultipleVendors
 } from '../contactUtility';
 
 @connect(state => ({
@@ -59,7 +63,8 @@ class ContactListContainer extends Component {
     activeVariantTagKeys: [],
     activeVendorTagKeys: [],
     showTagContainer: false,
-    showPrintVendorModal: false
+    showPrintVendorModal: false,
+    vendorTagSetToExport: {}
   };
 
   onSearchChange = evt =>
@@ -263,7 +268,8 @@ class ContactListContainer extends Component {
       showEventLogModal,
       showTrafficModal,
       showTagContainer,
-      showPrintVendorModal
+      showPrintVendorModal,
+      vendorTagSetToExport
     } = this.state;
 
     const visibleContacts = contacts.filter(
@@ -347,7 +353,13 @@ class ContactListContainer extends Component {
               // tags={tags}
             />
 
-            <Tag onClick={() => this.setState({ showPrintVendorModal: true })}>
+            <Tag
+              onClick={() =>
+                this.setState({
+                  showPrintVendorModal: true,
+                  vendorTagSetToExport: []
+                })}
+            >
               Export by Vendor
             </Tag>
 
@@ -356,65 +368,29 @@ class ContactListContainer extends Component {
                 title="Export Inventory by Vendor"
                 visible={showPrintVendorModal}
                 onCancel={() => this.setState({ showPrintVendorModal: false })}
-                footer={null}
+                okText="Export"
+                cancelText="Cancel"
+                onOk={() => {
+                  console.log('hello');
+                  exportContactByMultipleVendors(
+                    visibleContacts,
+                    R.keys(vendorTagSetToExport)
+                  );
+                  this.setState({
+                    showPrintVendorModal: false,
+                    vendorTagSetToExport: []
+                  });
+                }}
               >
-                {vendorTags.map(vt => (
-                  <div className="row" style={{ padding: 3 }}>
-                    <div className="col-10">
-                      <span>{vt.label}</span>
-                    </div>
-                    <a
-                      onClick={() =>
-                        exportContactByVendor(
-                          contacts,
-                          vt.key,
-                          `${vt.key}-vendor`
-                        )}
-                      className="text-primary"
-                    >
-                      Export
-                    </a>
-                  </div>
-                ))}
+                <VendorTagInputContainer
+                  allowAddNewTag={false}
+                  selectedTagSet={vendorTagSetToExport}
+                  onTagSetChange={keySet =>
+                    this.setState({ vendorTagSetToExport: keySet })}
+                />
               </Modal>
             )}
           </div>
-
-          {/* {showEmailTextArea ? (
-            <Tooltip title="Hide Emails">
-              <Icon
-                onClick={() => this.setState({ showEmailTextArea: false })}
-                type="close-circle-o"
-                className="fn-icon"
-              />
-            </Tooltip>
-          ) : (
-            <Tooltip title="Get Emails">
-              <Icon
-                onClick={() => this.setState({ showEmailTextArea: true })}
-                type="mail"
-                className="fn-icon"
-              />
-            </Tooltip>
-          )}
-
-          {showPhoneTextArea ? (
-            <Tooltip title="Hide Phones">
-              <Icon
-                onClick={() => this.setState({ showPhoneTextArea: false })}
-                type="close-circle-o"
-                className="fn-icon"
-              />
-            </Tooltip>
-          ) : (
-            <Tooltip title="Get Phones">
-              <Icon
-                onClick={() => this.setState({ showPhoneTextArea: true })}
-                type="phone"
-                className="fn-icon"
-              />
-            </Tooltip>
-          )} */}
 
           {showOnlyDeleted ? (
             <Tooltip title="Show Active Contacts">

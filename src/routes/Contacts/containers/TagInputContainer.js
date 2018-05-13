@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { message, Spin } from "antd";
-import R from "ramda";
-import TagInput from "../components/TagInput";
-import tagsQuery, { createContactTag } from "../../../fireQuery/tagsQuery";
-import { parseTagFromLabel } from "../contactUtility";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { message, Spin } from 'antd';
+import R from 'ramda';
+import TagInput from '../components/TagInput';
+import tagsQuery, { createContactTag } from '../../../fireQuery/tagsQuery';
+import { parseTagFromLabel } from '../contactUtility';
 
 // @connect(state => ({
 //   tags: state.tagChunk.tags
@@ -58,16 +58,16 @@ export default class TagInputContainer extends Component {
   };
 
   render() {
-    const { tags, ...rest } = this.props;
+    const { tags, allowAddNewTag = true, ...rest } = this.props;
     const { addNewTag, onTagSelect, onClose } = this;
     const { loading } = this.state;
-    console.log("tags conainer", tags);
+    console.log('tags conainer', tags);
 
     return (
       <Spin
         spinning={loading}
         style={{
-          borderBottom: "1px solid lightgray"
+          borderBottom: '1px solid lightgray'
         }}
       >
         <TagInput
@@ -75,8 +75,9 @@ export default class TagInputContainer extends Component {
           tags={tags}
           addNewTag={addNewTag}
           onTagSelect={onTagSelect}
+          allowAddNewTag={allowAddNewTag}
           onClose={onClose}
-        />{" "}
+        />{' '}
       </Spin>
     );
   }
@@ -84,15 +85,15 @@ export default class TagInputContainer extends Component {
 
 export const ContactTagInputContainer = connect(state => ({
   tags: state.tagChunk.tags,
-  tagQuery: tagsQuery("contact")
+  tagQuery: tagsQuery('contact')
 }))(TagInputContainer);
 
 export const VariantTagInputContainer = connect(state => ({
   tags: state.variantTagChunk.tags,
-  tagQuery: tagsQuery("variant")
+  tagQuery: tagsQuery('variant')
 }))(TagInputContainer);
 
 export const VendorTagInputContainer = connect(state => ({
   tags: state.vendorTagChunk.tags,
-  tagQuery: tagsQuery("vendor")
+  tagQuery: tagsQuery('vendor')
 }))(TagInputContainer);
