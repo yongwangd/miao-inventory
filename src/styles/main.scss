@@ -323,4 +323,16 @@ a:hover {
 
 }
 
+.card-inventory {
+  display: flex;
+  .inventory-item {
+    flex: 1;
+    span {
+      font-weight: bold;
+      font-size: 18px;
+      margin-left:5px
+    }
+  }
+
+}
 

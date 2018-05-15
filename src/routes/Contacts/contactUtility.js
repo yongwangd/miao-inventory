@@ -119,6 +119,10 @@ export const exportContactByVendor = (
 export const exportContactByMultipleVendors = (contacts, vendorKeys) => {
   let csv = `Product,Variant,${vendorKeys.join(',')},Total\n`;
 
+  // const filtered = contacts.filter(
+  //   ct => R.intersection(getContactVendors(ct), vendorKeys).length > 0
+  // );
+
   const variantStep = R.flatten(
     contacts.map(ct => {
       const { name, variantTagKeySet } = ct;

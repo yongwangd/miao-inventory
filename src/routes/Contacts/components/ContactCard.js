@@ -17,7 +17,11 @@ import TagList from './TagList';
 import columns from '../../../properties/contactColumns';
 import SearchHighlight from '../../../commonCmps/SearchHighlight';
 import { stopAsyncValidation } from 'redux-form';
-import { getContactVendors } from '../contactUtility';
+import {
+  getContactVendors,
+  getContactInventorySummary
+} from '../contactUtility';
+import InventoryCount from './InventoryCount';
 
 class ContactCard extends React.Component {
   constructor(props) {
@@ -46,6 +50,7 @@ class ContactCard extends React.Component {
       vendorTags
     } = this.props;
     const { setContactColor, setHovering } = this;
+    const { primary, secondary, total } = getContactInventorySummary(info);
     // const { name, age, email, phone, search} = props;
     const { _id, name, color = 'white', deleted = false, ...rest } = info;
     const colorObj = colors.find(c => c.id == color);
@@ -137,6 +142,19 @@ class ContactCard extends React.Component {
         </div>
         <Row style={{ minHeight: 30 }} onClick={() => onEditClick(info)}>
           <Col className="card-text">
+            <div style={{ color: colorObj.font }} className="card-inventory">
+              <span className="inventory-item">
+                P:
+                <span>{primary}</span>
+              </span>
+              <span className="inventory-item">
+                S: <span>{secondary}</span>
+              </span>
+              <span className="inventory-item">
+                T: <span>{total}</span>
+              </span>
+            </div>
+
             {columns
               .filter(
                 c => !c.notShow && info[c.key] != null && info[c.key] != ''
