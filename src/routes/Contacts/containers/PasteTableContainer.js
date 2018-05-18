@@ -41,6 +41,8 @@ class PasteTableContainer extends React.Component {
         <span className="text-danger">Not Found</span>
       );
 
+      // const nameSpan = JSON.stringify(row);
+
       const variantSpan = !rawVariant ? (
         <span className="text-danger">No Variant</span>
       ) : name && variantExist ? (

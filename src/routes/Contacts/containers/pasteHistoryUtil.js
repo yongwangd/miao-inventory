@@ -58,7 +58,8 @@ export const parsePasteText = (text, contacts, variants, vendors) => {
           v.key.toLowerCase() == row.rawVariant && row.rawVariant.toLowerCase()
       );
       const vendor = vendors.find(
-        v => v.key.toLowerCase() == row.rawVendor && row.rawVendor.toLowerCase()
+        v =>
+          v.key.toLowerCase() == (row.rawVendor && row.rawVendor.toLowerCase())
       );
       return {
         ...row,
