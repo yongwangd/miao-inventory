@@ -1,38 +1,12 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import validator from 'validator';
 import PropTypes from 'prop-types';
-import {
-  Collapse,
-  Divider,
-  Button,
-  message,
-  Popconfirm,
-  Popover,
-  Spin,
-  Table,
-  Menu,
-  Dropdown,
-  Form,
-  InputNumber,
-  Modal,
-  Icon,
-  Input
-} from 'antd';
+import { Collapse, Button, message, Popconfirm, Spin } from 'antd';
 import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
 import simpleForm from '../../../lib/simpleForm';
 // import ImageViewer from "../../../commonCmps/ImageViewer";
 // import { getBusinessCardRef } from "../../../fireQuery/fireConnection";
-import createUUID from '../../../lib/uuidTool';
-import TagInputContainer, {
-  ContactTagInputContainer
-} from '../containers/TagInputContainer';
-import { a } from '../contactUtility';
-import { actions } from '../../../store/authReducer';
-import tagsQuery from '../../../fireQuery/tagsQuery';
-import { VariantTagInputContainer } from './TagInputContainer';
-
-const { Panel } = Collapse;
+import { ContactTagInputContainer } from '../containers/TagInputContainer';
 
 const validation = () => {
   const err = {};
@@ -43,61 +17,11 @@ const validation = () => {
   return err;
 };
 
-const variantColumns = [
-  {
-    title: 'Vendor',
-    dataIndex: 'label',
-    key: 'label'
-  },
-  {
-    title: 'Primary',
-    dataIndex: 'primary',
-    key: 'primary',
-    render: (text, record) => {
-      const menu = (
-        <div>
-          <div>
-            <a onClick={() => message.info('In Stock')}>New Arrivals: </a>
-            <InputNumber min={0} defaultValue={0} />
-          </div>
-
-          <a onClick={() => message.info('In Move to S')}>
-            Move to Secondary Storage
-          </a>
-          <a>Reset</a>
-        </div>
-      );
-      return (
-        <Popover content={menu} title="Actions">
-          <a className="ant-dropdown-link" style={{ color: 'blue' }}>
-            {text}
-          </a>
-        </Popover>
-      );
-    }
-  },
-  {
-    title: 'Secondary',
-    dataIndex: 'secondary',
-    key: 'secondary'
-  },
-  {
-    title: 'Actions',
-    key: 'action',
-    render: (text, record) => (
-      <span>
-        <a>
-          <Icon type="close" />
-        </a>
-      </span>
-    )
-  }
-];
-
 @connect()
 @simpleForm({
   fields: [
     'name',
+    'code',
     'comment',
     // "inStock",
     'tagKeySet',
@@ -147,7 +71,7 @@ class ContactItemForm extends Component {
     } = props;
     const { uploadLoading, edittingTags } = this.state;
 
-    const fieldArray = ['name'];
+    const fieldArray = ['name', 'code'];
 
     const capitalize = str => str.slice(0, 1).toUpperCase() + str.slice(1);
 

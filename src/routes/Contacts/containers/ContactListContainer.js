@@ -64,7 +64,8 @@ class ContactListContainer extends Component {
     activeVendorTagKeys: [],
     showTagContainer: false,
     showPrintVendorModal: false,
-    vendorTagSetToExport: {}
+    vendorTagSetToExport: {},
+    showImportTransactionModal: false
   };
 
   onSearchChange = evt =>
@@ -269,7 +270,8 @@ class ContactListContainer extends Component {
       showTrafficModal,
       showTagContainer,
       showPrintVendorModal,
-      vendorTagSetToExport
+      vendorTagSetToExport,
+      showImportTransactionModal
     } = this.state;
 
     const visibleContacts = contacts.filter(
@@ -391,6 +393,29 @@ class ContactListContainer extends Component {
               </Modal>
             )}
           </div>
+
+          <Button
+            onClick={() => this.setState({ showImportTransactionModal: true })}
+          >
+            Import
+          </Button>
+          {showImportTransactionModal && (
+            <Modal
+              title="Paste History"
+              visible={showImportTransactionModal}
+              onCancel={() =>
+                this.setState({ showImportTransactionModal: false })}
+              okText="Proceed"
+              cancelText="Cancel"
+              onOk={() => {
+                console.log('hello');
+              }}
+            >
+              <div>
+                <Input.Search placeholder="Paste Here..." enterButton />
+              </div>
+            </Modal>
+          )}
 
           {showOnlyDeleted ? (
             <Tooltip title="Show Active Contacts">

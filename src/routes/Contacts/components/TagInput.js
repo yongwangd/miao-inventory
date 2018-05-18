@@ -9,7 +9,7 @@ class TagInput extends Component {
   };
 
   handleChange = e => {
-    const { tags, addNewTag, allowAddNewTag } = this.props;
+    const { tags, addNewTag, allowAddNewTag = true } = this.props;
     if (!allowAddNewTag) return;
     if (e.key != 'Enter') return;
     const label = e.target.value.trim();

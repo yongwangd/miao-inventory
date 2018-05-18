@@ -43,7 +43,6 @@ export const getContactInventorySummary = contact => {
   const temp = R.flatten(
     R.values(contact.variantTagKeySet || {}).map(vendors => R.values(vendors))
   ).filter(R.is(Object));
-  console.log('rrrr', temp);
   const r = temp.reduce(
     (acc, cur) => ({
       primary: acc.primary + (cur.primary || 0),

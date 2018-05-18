@@ -341,7 +341,6 @@ class InventoryEditContainer extends React.Component {
               }}
             >
               <VendorTagInputContainer
-                allowAddNewTag={false}
                 selectedTagSet={vendorsEditCopy}
                 onTagSetChange={keySet => {
                   const diff = R.pickBy(
