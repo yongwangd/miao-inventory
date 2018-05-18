@@ -35,6 +35,7 @@ import {
   getContactVendors,
   exportContactByMultipleVendors
 } from '../contactUtility';
+import { parsePasteText } from './pasteHistoryUtil';
 
 @connect(state => ({
   contacts: state.contactChunk.contacts,
@@ -412,7 +413,15 @@ class ContactListContainer extends Component {
               }}
             >
               <div>
-                <Input.Search placeholder="Paste Here..." enterButton />
+                {/* <Input.Search placeholder="Paste Here..." enterButton /> */}
+                <input ref={input => (this.pasteInput = input)} />
+                <Button
+                  onClick={() => {
+                    console.log(this.pasteInput.value);
+                    const r = parsePasteText(this.pasteInput.value);
+                    console.log(r);
+                  }}
+                />
               </div>
             </Modal>
           )}
