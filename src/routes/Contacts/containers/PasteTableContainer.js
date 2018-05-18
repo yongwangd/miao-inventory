@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Icon, message } from 'antd';
+import { Button, Icon, message, Tooltip } from 'antd';
 import { parsePasteText } from './pasteHistoryUtil';
-import { GREEN, RED } from '../../../properties/Colors';
+import { GREEN, RED, GRAY } from '../../../properties/Colors';
 import { updateVendorQuantity } from '../../../fireQuery/contactsQuery';
 
 class PasteTableContainer extends React.Component {
@@ -57,46 +57,72 @@ class PasteTableContainer extends React.Component {
         <span className="text-danger">{rawVendor}</span>
       );
 
+      const existValid = name && variantExist && vendorExist;
+      const notEnough = existValid && secondary < qty;
+
       const valid = name && variantExist && vendorExist && secondary >= qty;
 
-      const statusSpan = updated ? (
-        <Icon style={{ color: GREEN, fontSize: 18 }} type="check-circle" />
+      const pstSpan =
+        existValid && !updated ? (
+          <div>
+            P:{' '}
+            <span style={{ fontWeight: 'bold', fontSize: 14, marginRight: 6 }}>
+              {primary}
+            </span>{' '}
+            - S:{' '}
+            <span style={{ fontWeight: 'bold', fontSize: 14, marginRight: 6 }}>
+              {secondary}
+            </span>{' '}
+            - T:{' '}
+            <span style={{ fontWeight: 'bold', fontSize: 14 }}>{total}</span>
+          </div>
+        ) : (
+          <span />
+        );
+
+      const statusSpan = notEnough ? (
+        <Tooltip title="Not Enough in Secondary">
+          <Icon type="info-circle" style={{ color: GRAY, fontSize: 18 }} />
+        </Tooltip>
+      ) : updated ? (
+        <Icon style={{ color: 'green', fontSize: 18 }} type="check-circle" />
       ) : valid ? (
         <span />
       ) : (
         <Icon type="close-circle" style={{ color: RED, fontSize: 18 }} />
       );
 
-      const trClass = `table-${updated
-        ? 'secondary'
-        : valid ? 'success' : 'danger'}`;
+      const trClass = `table-${notEnough
+        ? 'warning'
+        : updated ? 'secondary' : valid ? 'success' : 'danger'}`;
 
-      const actionSpan =
-        !updated && valid ? (
-          <Button
-            type="primary"
-            size="small"
-            onClick={() =>
-              updateVendorQuantity({
-                contactId: _id,
-                variantKey,
-                vendorKey,
-                type: 'secondary',
-                number: secondary - qty
-              }).then(() => {
-                message.success('updated');
-                this.setState({
-                  entries: entries.map(
-                    e => (e.index == row.index ? { ...e, updated: true } : e)
-                  )
-                });
-              })}
-          >
-            Update
-          </Button>
-        ) : (
-          <span />
-        );
+      const actionSpan = updated ? (
+        <span>Updated!</span>
+      ) : valid ? (
+        <Button
+          type="primary"
+          size="small"
+          onClick={() =>
+            updateVendorQuantity({
+              contactId: _id,
+              variantKey,
+              vendorKey,
+              type: 'secondary',
+              number: secondary - qty
+            }).then(() => {
+              message.success('updated');
+              this.setState({
+                entries: entries.map(
+                  e => (e.index == row.index ? { ...e, updated: true } : e)
+                )
+              });
+            })}
+        >
+          Update
+        </Button>
+      ) : (
+        <span />
+      );
 
       return (
         <tr className={trClass} key={index}>
@@ -104,10 +130,12 @@ class PasteTableContainer extends React.Component {
           <td>{nameSpan}</td>
           <td>{variantSpan}</td>
           <td>{vendorSpan}</td>
-          <td>{qty}</td>
           <td>
-            P: {primary} - S: {secondary} - T: {total}
+            <span style={{ fontSize: 14 }} className="badge badge-dark">
+              {qty}
+            </span>
           </td>
+          <td>{pstSpan}</td>
           <td>{statusSpan}</td>
           <td>{actionSpan}</td>
         </tr>
@@ -118,10 +146,12 @@ class PasteTableContainer extends React.Component {
       <div>
         <div style={{ display: 'flex', marginBottom: 10 }}>
           <input
+            placeholder="Paste Your content here"
             ref={input => (this.pasteInput = input)}
-            style={{ flex: 1, marginRight: 20, height: 30 }}
+            style={{ flex: 1, marginRight: 10, height: 30 }}
           />
           <Button
+            type="primary"
             onClick={() => {
               console.log(this.pasteInput.value);
               const r = parsePasteText(
@@ -138,7 +168,7 @@ class PasteTableContainer extends React.Component {
           </Button>
         </div>
         {entries && (
-          <table className="table table-sm">
+          <table className="table table-sm table-hover">
             <thead>
               <th scope="col">CODE</th>
               <th scope="col" style={{ width: '30%' }}>

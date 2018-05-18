@@ -409,10 +409,7 @@ class ContactListContainer extends Component {
               onCancel={() =>
                 this.setState({ showImportTransactionModal: false })}
               okText="Proceed"
-              cancelText="Cancel"
-              onOk={() => {
-                console.log('hello');
-              }}
+              footer={null}
             >
               <div>
                 {/* <input ref={input => (this.pasteInput = input)} />
