@@ -5,6 +5,7 @@ function isLetter(c) {
 }
 
 const formatText = (text, contacts, variants, vendors) => {
+  let index = 0;
   const regex = new RegExp(`(?<=\\t\\s\\d+)\\s`);
   const trans = text.split(regex).map(rawRow => {
     const row = rawRow
@@ -34,6 +35,7 @@ const formatText = (text, contacts, variants, vendors) => {
     const [code, rawVariant, rawVendor] = inter;
 
     return {
+      index: index++,
       code,
       rawVariant,
       rawVendor,

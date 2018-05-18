@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon , message} from 'antd';
+import { Button, Icon, message } from 'antd';
 import { parsePasteText } from './pasteHistoryUtil';
 import { GREEN, RED } from '../../../properties/Colors';
 import { updateVendorQuantity } from '../../../fireQuery/contactsQuery';
@@ -15,6 +15,7 @@ class PasteTableContainer extends React.Component {
 
     const renderRow = row => {
       const {
+        index,
         code,
         name,
         _id,
@@ -28,7 +29,8 @@ class PasteTableContainer extends React.Component {
         total,
         exist,
         vendorExist,
-        variantExist
+        variantExist,
+        updated = false
       } = row;
 
       console.log('_id is ', _id);
@@ -47,55 +49,57 @@ class PasteTableContainer extends React.Component {
         <span className="text-danger">{rawVariant}</span>
       );
 
-      // const vendorSpan =
-      //   vendorKey && vendorExist ? (
-      //     <span>{vendorKey}</span>
-      //   ) : (
-      //     <span className="text-danger">
-      //       {rawVendor && `[${rawVendor}]`} Not Found
-      //     </span>
-      //   );
-
       const vendorSpan = !rawVendor ? (
         <span className="text-danger">No Vendor</span>
-      ) : vendorExist ? (<span>{vendorKey}</span>) : (
-          <span className="text-danger">{rawVendor}</span>
-      )
-
+      ) : vendorExist ? (
+        <span>{vendorKey}</span>
+      ) : (
+        <span className="text-danger">{rawVendor}</span>
+      );
 
       const valid = name && variantExist && vendorExist && secondary >= qty;
 
-      const statusSpan = valid ? (
-        <Icon style={{ color: GREEN }} type="check-circle" />
-      ) : (
-        <Icon type="close-circle" style={{ color: RED }} />
-      );
-
-      const trClass = `table-${valid ? 'success' : 'danger'}`;
-
-      const actionSpan = valid ? (
-        <Button
-          type="primary"
-          size="small"
-          onClick={() =>
-            updateVendorQuantity({
-              contactId: _id,
-              variantKey,
-              vendorKey,
-              type: 'secondary',
-              number: secondary - qty
-            }).then(() => message.success('updated'))
-            .then(() => this.)
-          }
-        >
-          Update
-        </Button>
-      ) : (
+      const statusSpan = updated ? (
+        <Icon style={{ color: GREEN, fontSize: 18 }} type="check-circle" />
+      ) : valid ? (
         <span />
+      ) : (
+        <Icon type="close-circle" style={{ color: RED, fontSize: 18 }} />
       );
+
+      const trClass = `table-${updated
+        ? 'secondary'
+        : valid ? 'success' : 'danger'}`;
+
+      const actionSpan =
+        !updated && valid ? (
+          <Button
+            type="primary"
+            size="small"
+            onClick={() =>
+              updateVendorQuantity({
+                contactId: _id,
+                variantKey,
+                vendorKey,
+                type: 'secondary',
+                number: secondary - qty
+              }).then(() => {
+                message.success('updated');
+                this.setState({
+                  entries: entries.map(
+                    e => (e.index == row.index ? { ...e, updated: true } : e)
+                  )
+                });
+              })}
+          >
+            Update
+          </Button>
+        ) : (
+          <span />
+        );
 
       return (
-        <tr className={trClass}>
+        <tr className={trClass} key={index}>
           <td>{code}</td>
           <td>{nameSpan}</td>
           <td>{variantSpan}</td>
@@ -112,20 +116,27 @@ class PasteTableContainer extends React.Component {
 
     return (
       <div>
-        <input ref={input => (this.pasteInput = input)} />
-        <Button
-          onClick={() => {
-            console.log(this.pasteInput.value);
-            const r = parsePasteText(
-              this.pasteInput.value,
-              contacts,
-              variantTags,
-              vendorTags
-            );
-            this.setState({ entries: r });
-          }}
-        />
-
+        <div style={{ display: 'flex', marginBottom: 10 }}>
+          <input
+            ref={input => (this.pasteInput = input)}
+            style={{ flex: 1, marginRight: 20, height: 30 }}
+          />
+          <Button
+            onClick={() => {
+              console.log(this.pasteInput.value);
+              const r = parsePasteText(
+                this.pasteInput.value,
+                contacts,
+                variantTags,
+                vendorTags
+              );
+              this.setState({ entries: r });
+              this.pasteInput.value = '';
+            }}
+          >
+            GO
+          </Button>
+        </div>
         {entries && (
           <table className="table table-sm">
             <thead>
