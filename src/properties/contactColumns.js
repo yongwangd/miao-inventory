@@ -5,6 +5,11 @@ const columns = [
     notShow: true
   },
   {
+    key: 'code',
+    label: 'Code',
+    notShow: true
+  },
+  {
     key: 'quantity',
     label: 'Quantity'
   },

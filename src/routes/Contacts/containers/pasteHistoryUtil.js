@@ -4,7 +4,7 @@ function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 }
 
-export const parsePasteText = (text, contacts, variants, vendors) => {
+const formatText = (text, contacts, variants, vendors) => {
   const regex = new RegExp(`(?<=\\t\\s\\d+)\\s`);
   const trans = text.split(regex).map(rawRow => {
     const row = rawRow
@@ -31,12 +31,12 @@ export const parsePasteText = (text, contacts, variants, vendors) => {
     }
 
     console.log(inter, 'inter');
-    const [name, variant, vendor] = inter;
+    const [code, rawVariant, rawVendor] = inter;
 
     return {
-      name,
-      variant,
-      vendor,
+      code,
+      rawVariant,
+      rawVendor,
       qty
     };
   });
@@ -44,4 +44,58 @@ export const parsePasteText = (text, contacts, variants, vendors) => {
   console.log('trans is ', trans);
 
   return trans;
+};
+
+export const parsePasteText = (text, contacts, variants, vendors) => {
+  const trans = formatText(text);
+
+  const resultArray = trans
+    .map(row => {
+      const variant = variants.find(
+        v =>
+          v.key.toLowerCase() == row.rawVariant && row.rawVariant.toLowerCase()
+      );
+      const vendor = vendors.find(
+        v => v.key.toLowerCase() == row.rawVendor && row.rawVendor.toLowerCase()
+      );
+      return {
+        ...row,
+        variantKey: variant && variant.key,
+        vendorKey: vendor && vendor.key
+      };
+    })
+    .map(row => {
+      const { variantKey, vendorKey } = row;
+      const found = contacts.find(c => c.code == row.code);
+
+      const toReturn = {
+        ...row
+      };
+
+      if (found) {
+        console.log(found);
+        toReturn.exist = true;
+        toReturn.name = found.name;
+        const vendorValue = R.path(
+          ['variantTagKeySet', variantKey, vendorKey],
+          found
+        );
+        if (vendorValue) {
+          const { primary = 0, secondary = 0 } = vendorValue;
+          toReturn.vendorExist = true;
+          toReturn.primary = primary;
+          toReturn.secondary = secondary;
+          toReturn.total = primary + secondary;
+        } else {
+          toReturn.vendorExist = false;
+        }
+      } else {
+        toReturn.exist = false;
+      }
+
+      return toReturn;
+    });
+
+  console.log('lsasss', resultArray);
+  return resultArray;
 };
