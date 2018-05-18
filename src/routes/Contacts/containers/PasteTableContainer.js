@@ -1,6 +1,8 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Icon , message} from 'antd';
 import { parsePasteText } from './pasteHistoryUtil';
+import { GREEN, RED } from '../../../properties/Colors';
+import { updateVendorQuantity } from '../../../fireQuery/contactsQuery';
 
 class PasteTableContainer extends React.Component {
   state = {
@@ -15,8 +17,11 @@ class PasteTableContainer extends React.Component {
       const {
         code,
         name,
+        _id,
         variantKey,
+        rawVariant,
         vendorKey,
+        rawVendor,
         qty,
         primary,
         secondary,
@@ -26,32 +31,81 @@ class PasteTableContainer extends React.Component {
         variantExist
       } = row;
 
+      console.log('_id is ', _id);
+
       const nameSpan = name ? (
-        <span>{name}</span>
+        <span>{name + _id}</span>
       ) : (
         <span className="text-danger">Not Found</span>
       );
 
-      const variantSpan = variantExist ? (
+      const variantSpan = !rawVariant ? (
+        <span className="text-danger">No Variant</span>
+      ) : name && variantExist ? (
         <span>{variantKey}</span>
       ) : (
-        <span className="text-danger">
-          {variantKey} Not Found on {code}
-        </span>
+        <span className="text-danger">{rawVariant}</span>
+      );
+
+      // const vendorSpan =
+      //   vendorKey && vendorExist ? (
+      //     <span>{vendorKey}</span>
+      //   ) : (
+      //     <span className="text-danger">
+      //       {rawVendor && `[${rawVendor}]`} Not Found
+      //     </span>
+      //   );
+
+      const vendorSpan = !rawVendor ? (
+        <span className="text-danger">No Vendor</span>
+      ) : vendorExist ? (<span>{vendorKey}</span>) : (
+          <span className="text-danger">{rawVendor}</span>
+      )
+
+
+      const valid = name && variantExist && vendorExist && secondary >= qty;
+
+      const statusSpan = valid ? (
+        <Icon style={{ color: GREEN }} type="check-circle" />
+      ) : (
+        <Icon type="close-circle" style={{ color: RED }} />
+      );
+
+      const trClass = `table-${valid ? 'success' : 'danger'}`;
+
+      const actionSpan = valid ? (
+        <Button
+          type="primary"
+          size="small"
+          onClick={() =>
+            updateVendorQuantity({
+              contactId: _id,
+              variantKey,
+              vendorKey,
+              type: 'secondary',
+              number: secondary - qty
+            }).then(() => message.success('updated'))
+            .then(() => this.)
+          }
+        >
+          Update
+        </Button>
+      ) : (
+        <span />
       );
 
       return (
-        <tr>
+        <tr className={trClass}>
           <td>{code}</td>
           <td>{nameSpan}</td>
           <td>{variantSpan}</td>
-          <td>{vendorKey}</td>
+          <td>{vendorSpan}</td>
           <td>{qty}</td>
           <td>
             P: {primary} - S: {secondary} - T: {total}
           </td>
-          <td>UnNown</td>
-          <td>Action</td>
+          <td>{statusSpan}</td>
+          <td>{actionSpan}</td>
         </tr>
       );
     };

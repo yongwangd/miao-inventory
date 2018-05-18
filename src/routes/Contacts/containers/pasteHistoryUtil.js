@@ -76,6 +76,9 @@ export const parsePasteText = (text, contacts, variants, vendors) => {
         console.log(found);
         toReturn.exist = true;
         toReturn.name = found.name;
+        toReturn._id = found._id;
+        const variantValue = R.path(['variantTagKeySet', variantKey], found);
+        toReturn.variantExist = variantValue != null;
         const vendorValue = R.path(
           ['variantTagKeySet', variantKey, vendorKey],
           found
