@@ -3,6 +3,7 @@ import { Button, Icon, message, Tooltip } from 'antd';
 import { parsePasteText } from './pasteHistoryUtil';
 import { GREEN, RED, GRAY } from '../../../properties/Colors';
 import { updateVendorQuantity } from '../../../fireQuery/contactsQuery';
+import { exportContactInventory } from '../contactUtility';
 
 class PasteTableContainer extends React.Component {
   state = {
@@ -154,6 +155,7 @@ class PasteTableContainer extends React.Component {
           />
           <Button
             type="primary"
+            style={{ marginRight: 10 }}
             onClick={() => {
               console.log(this.pasteInput.value);
               const r = parsePasteText(
@@ -167,6 +169,13 @@ class PasteTableContainer extends React.Component {
             }}
           >
             GO
+          </Button>
+          <Button
+            type="default"
+            icon="download"
+            onClick={() => exportContactInventory(contacts)}
+          >
+            Export All Inventory
           </Button>
         </div>
         {entries && (

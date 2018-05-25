@@ -22,6 +22,7 @@ import {
   getContactInventorySummary
 } from '../contactUtility';
 import InventoryCount from './InventoryCount';
+import SimpleInputWrapper from '../../../commonCmps/SimpleInputWrapper';
 
 class ContactCard extends React.Component {
   constructor(props) {
@@ -52,12 +53,15 @@ class ContactCard extends React.Component {
     const { setContactColor, setHovering } = this;
     const { primary, secondary, total } = getContactInventorySummary(info);
     // const { name, age, email, phone, search} = props;
-    const { _id, name, color = 'white', deleted = false, ...rest } = info;
+    const { _id, code, name, color = 'white', deleted = false, ...rest } = info;
     const colorObj = colors.find(c => c.id == color);
 
     const nameTitle = (
       <p>
-        <SearchHighlight search={search} value={name} />
+        <SearchHighlight
+          search={search}
+          value={name + (code ? ` (${code})` : '')}
+        />
       </p>
     );
 

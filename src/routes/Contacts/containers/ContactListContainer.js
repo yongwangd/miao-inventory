@@ -396,15 +396,15 @@ class ContactListContainer extends Component {
             )}
           </div>
 
-          <Button
+          <Icon
+            type="cloud-upload-o"
+            className="fn-icon"
             onClick={() => this.setState({ showImportTransactionModal: true })}
-          >
-            Import
-          </Button>
+          />
           {showImportTransactionModal && (
             <Modal
               className="paste-modal"
-              title="Paste History"
+              title="Paste History (Please Export Inventory Data first!)"
               visible={showImportTransactionModal}
               onCancel={() =>
                 this.setState({ showImportTransactionModal: false })}
@@ -412,19 +412,6 @@ class ContactListContainer extends Component {
               footer={null}
             >
               <div>
-                {/* <input ref={input => (this.pasteInput = input)} />
-                <Button
-                  onClick={() => {
-                    console.log(this.pasteInput.value);
-                    const r = parsePasteText(
-                      this.pasteInput.value,
-                      contacts,
-                      variantTags,
-                      vendorTags
-                    );
-                  }}
-                /> */}
-
                 <PasteTableContainer
                   {...{ contacts, variantTags, vendorTags }}
                 />
