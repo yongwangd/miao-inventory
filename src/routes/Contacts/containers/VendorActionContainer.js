@@ -57,9 +57,9 @@ class VendorActionContainer extends React.Component {
       newToPrimary: {
         line: true,
         x1: 20,
-        y1: 90,
+        y1: 60,
         x2: 70,
-        y2: 90,
+        y2: 60,
         text: 'Add to Primary Storage: ',
         enabled: true,
         min: 1,
@@ -71,6 +71,25 @@ class VendorActionContainer extends React.Component {
             number: primary + value
           }).then(() =>
             message.success(`Added ${value} Items to Primary Storage`)
+          )
+      },
+      outFromPrimary: {
+        line: true,
+        x1: 100,
+        y1: 120,
+        x2: 50,
+        y2: 120,
+        text: 'Remove from Primary Storage: ',
+        enabled: primary > 0,
+        min: 1,
+        valid: value => value > 0 && value <= primary,
+        onSubmit: value =>
+          updateVendorQuantity({
+            ...generalParams,
+            type: 'primary',
+            number: primary - value
+          }).then(() =>
+            message.success(`Removed ${value} Items from Primary Storage`)
           )
       },
       moveToSecondary: {
