@@ -62,6 +62,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "request-promise-native": "^1.0.4",
+    "rx-cloud-pubsub": "^1.0.0",
     "rxjs": "^5.4.3",
     "validator": "^8.1.0",
     "whatwg-fetch": "^2.0.3"

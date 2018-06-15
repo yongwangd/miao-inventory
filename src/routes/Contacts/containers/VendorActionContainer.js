@@ -1,22 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, message, Popconfirm, Button, Badge, Tag } from 'antd';
+import { Modal, message, Popconfirm, Button, Badge, Tag, Alert } from 'antd';
 import R from 'ramda';
 import VendorActionItem from '../components/VendorActionItem';
 import {
   updateVendorQuantity,
-  removeVendorFromVariant
+  removeVendorFromVariant,
+  updateVendorTresholdMin
 } from '../../../fireQuery/contactsQuery';
-import {
-  GREEN,
-  SILVER,
-  ORANGE,
-  RED,
-  BLUE,
-  MAROON,
-  BLACK
-} from '../../../properties/Colors';
-import InventoryCount from '../components/InventoryCount';
+import { GREEN, SILVER, ORANGE, BLACK } from '../../../properties/Colors';
+import ThresholdContainer from './ThresholdContainer';
 
 class VendorActionContainer extends React.Component {
   state = {
@@ -42,8 +35,9 @@ class VendorActionContainer extends React.Component {
 
     const generalParams = { contactId, variantKey, vendorKey };
 
-    const { primary = 0, secondary = 0 } = vendorInEdit;
+    const { primary = 0, secondary = 0, thresholdMin } = vendorInEdit;
     const total = primary + secondary;
+    const inventoryValid = thresholdMin == null || total >= thresholdMin;
 
     // const generateResult = message =>
     //   message ? { pass: false, message } : { pass: true };
@@ -193,6 +187,13 @@ class VendorActionContainer extends React.Component {
         onCancel={onCancel}
         footer={null}
       >
+        {!inventoryValid && (
+          <Alert
+            type="error"
+            style={{ marginBottom: 15 }}
+            message={`Inventry is less than the threshold ${thresholdMin}`}
+          />
+        )}
         <p className="vendor-header-p">
           {/* <a>Primary:</a>
           <span className="badge badge-danger">{primary}</span>
@@ -200,6 +201,17 @@ class VendorActionContainer extends React.Component {
           <span className="badge badge-danger">{secondary}</span> */}
           <a>Total:</a>
           <span className="badge badge-danger">{total}</span>
+          <ThresholdContainer
+            thresholdMin={thresholdMin}
+            valid={thresholdMin == null || total > thresholdMin}
+            submit={value =>
+              updateVendorTresholdMin({
+                contactId,
+                variantKey,
+                vendorKey,
+                min: value
+              })}
+          />
           <Popconfirm
             title="Are you sure to Remove this Vendor?"
             onConfirm={() => {
@@ -214,7 +226,7 @@ class VendorActionContainer extends React.Component {
             }}
           >
             <Button style={{ float: 'right' }} type="danger">
-              Remove this Vendor
+              Remove
             </Button>
           </Popconfirm>
         </p>

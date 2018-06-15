@@ -185,4 +185,56 @@ export const exportContactInventory = (contacts, filename = 'inventory') => {
   exportVendorStep(vendorStep, filename);
 };
 
+export const addInventoryValidForContact = contact => {
+  let contactValid = true;
+  Object.keys(contact.variantTagKeySet).forEach(variantKey => {
+    let invValid = true;
+    const variant = contact.variantTagKeySet[variantKey];
+
+    Object.keys(variant).forEach(vendorKey => {
+      const vendorOb = variant[vendorKey];
+
+      const { thresholdMin, primary = 0, secondary = 0 } = vendorOb;
+
+      const inventoryValid =
+        thresholdMin == null || primary + secondary >= thresholdMin;
+
+      console.log(vendorKey, vendorOb, inventoryValid);
+      vendorOb.$_inventoryValid = inventoryValid;
+      if (!inventoryValid) {
+        invValid = false;
+      }
+    });
+
+    variant.$_primaryCount = R.sum(
+      R.values(variant)
+        .map(v => v.primary)
+        .filter(v => v)
+    );
+    variant.$_secondaryCount = R.sum(
+      R.values(variant.vendors)
+        .map(v => v.secondary)
+        .filter(v => v)
+    );
+
+    const variantThresholdMin = R.path(
+      ['thresholdValues', variantKey, 'thresholdMin'],
+      contact
+    );
+    variant.$_inventoryValid =
+      invValid &&
+      (!variantThresholdMin ||
+        variant.$_primaryCount + variant.$_secondaryCount >=
+          variantThresholdMin);
+    if (!variant.$_inventoryValid) {
+      contactValid = false;
+    }
+  });
+
+  contact.$_inventoryValid = contactValid;
+
+  console.log(contact);
+  return contact;
+};
+
 export const a = 4;

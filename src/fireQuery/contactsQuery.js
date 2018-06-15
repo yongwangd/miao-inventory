@@ -80,4 +80,21 @@ export const updateVendorQuantity = ({
     )
     .set(number);
 
+export const updateVendorTresholdMin = ({
+  contactId,
+  variantKey,
+  vendorKey,
+  min
+}) =>
+  getFireDB()
+    .ref(
+      `contacts/${contactId}/variantTagKeySet/${variantKey}/${vendorKey}/thresholdMin`
+    )
+    .set(min);
+
+export const updateVariantTresholdMin = ({ contactId, variantKey, min }) =>
+  getFireDB()
+    .ref(`contacts/${contactId}/thresholdValues/${variantKey}/thresholdMin`)
+    .set(min);
+
 export const deleteContactById = id => contactsRef.removeById(id);

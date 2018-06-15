@@ -26,6 +26,7 @@ import {
   getContactInventorySummary
 } from '../contactUtility';
 import InventoryCount from '../components/InventoryCount';
+import ThresholdContainer from './ThresholdContainer';
 
 const { Panel } = Collapse;
 
@@ -85,6 +86,12 @@ class InventoryEditContainer extends React.Component {
     console.log('vendors', vendorTags);
     console.log('variants', variantArray);
 
+    const getVariantThreshold = variantKey =>
+      R.path(
+        ['thresholdValues', 'variants', variantKey, 'thresholdMin'],
+        contact
+      );
+
     const renderVariants = variants => {
       console.log('render');
 
@@ -104,6 +111,21 @@ class InventoryEditContainer extends React.Component {
         const menu = (
           <ul className="list-group">
             <li className="list-group-item">
+              <a
+                className="text-primary"
+                onClick={e => {
+                  e.preventDefault();
+                  this.setState({
+                    variantInEdit: variant,
+                    vendorsEditCopy: { ...variant.vendors }
+                  });
+                }}
+              >
+                Add Vendors
+              </a>
+            </li>
+            <li className="list-group-item">
+              <ThresholdContainer />
               <a
                 className="text-primary"
                 onClick={e => {
@@ -169,6 +191,15 @@ class InventoryEditContainer extends React.Component {
               </span>
               <span className="variant-header-span">
                 Total:
+                <span
+                  className="badge badge-light"
+                  style={{ display: 'inline-block', width: 30 }}
+                >
+                  {total}
+                </span>
+              </span>
+              <span className="variant-header-span">
+                Threshold:
                 <span
                   className="badge badge-light"
                   style={{ display: 'inline-block', width: 30 }}

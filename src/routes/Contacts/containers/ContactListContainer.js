@@ -33,13 +33,14 @@ import {
   exportContactSummary,
   exportContactByVendor,
   getContactVendors,
-  exportContactByMultipleVendors
+  exportContactByMultipleVendors,
+  addInventoryValidForContact
 } from '../contactUtility';
 import { parsePasteText } from './pasteHistoryUtil';
 import PasteTableContainer from './PasteTableContainer';
 
 @connect(state => ({
-  contacts: state.contactChunk.contacts,
+  contacts: state.contactChunk.contacts.map(addInventoryValidForContact),
   touchOnly: state.env.touchOnly,
   tags: state.tagChunk.tags,
   variantTags: state.variantTagChunk.tags,
@@ -555,7 +556,7 @@ class ContactListContainer extends Component {
 
           {contactInventoryInEdit && (
             <Modal
-              style={{ width: 900 }}
+              width={700}
               title={`Edit Inventory for ${contactInventoryInEdit.name}`}
               visible={contactInventoryInEdit != null}
               footer={null}
