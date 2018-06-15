@@ -95,9 +95,25 @@ export const updateVendorTresholdMin = ({
     )
     .set(min);
 
+export const removeVendorThresholdMin = ({
+  contactId,
+  variantKey,
+  vendorKey
+}) =>
+  getFireDB()
+    .ref(
+      `contacts/${contactId}/variantTagKeySet/${variantKey}/${vendorKey}/thresholdMin`
+    )
+    .remove();
+
 export const updateVariantTresholdMin = ({ contactId, variantKey, min }) =>
   getFireDB()
     .ref(`contacts/${contactId}/thresholdValues/${variantKey}/thresholdMin`)
     .set(min);
+
+export const removeVariantTresholdMin = ({ contactId, variantKey }) =>
+  getFireDB()
+    .ref(`contacts/${contactId}/thresholdValues/${variantKey}/thresholdMin`)
+    .remove();
 
 export const deleteContactById = id => contactsRef.removeById(id);

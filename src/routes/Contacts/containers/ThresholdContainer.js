@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, InputNumber } from 'antd';
+import { Button, Modal, InputNumber } from 'antd';
 import ModalContainer from '../../../commonCmps/ModalContainer';
 import { updateVendorTresholdMin } from '../../../fireQuery/contactsQuery';
 import { NAVY } from '../../../properties/Colors';
@@ -13,7 +13,7 @@ export default class ThresholdContainer extends Component {
   }
   render() {
     const { value } = this.state;
-    const { thresholdMin, valid, submit } = this.props;
+    const { thresholdMin, valid, submit, removeThreshold } = this.props;
     const badgeClass = `badge badge-${valid ? 'success' : 'danger'}`;
     return (
       <ModalContainer>
@@ -51,6 +51,15 @@ export default class ThresholdContainer extends Component {
                   this.inputElm = elm;
                 }}
               />
+              {thresholdMin != null && (
+                <Button
+                  onClick={() => removeThreshold().then(hide)}
+                  style={{ float: 'right' }}
+                  type="danger"
+                >
+                  Remove Threshold
+                </Button>
+              )}
             </Modal>
           </span>
         )}

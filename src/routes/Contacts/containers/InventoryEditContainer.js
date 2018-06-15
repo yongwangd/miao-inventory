@@ -19,7 +19,8 @@ import {
   updateContactVariantVendors,
   updateContactVariants,
   removeContactVariant,
-  updateVariantTresholdMin
+  updateVariantTresholdMin,
+  removeVariantTresholdMin
 } from '../../../fireQuery/contactsQuery';
 import VendorActionContainer from './VendorActionContainer';
 import {
@@ -132,6 +133,11 @@ class InventoryEditContainer extends React.Component {
                     contactId: contact._id,
                     variantKey: variant.key,
                     min
+                  })}
+                removeThreshold={() =>
+                  removeVariantTresholdMin({
+                    contactId: contact._id,
+                    variantKey: variant.key
                   })}
               />
             </li>

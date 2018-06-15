@@ -6,7 +6,8 @@ import VendorActionItem from '../components/VendorActionItem';
 import {
   updateVendorQuantity,
   removeVendorFromVariant,
-  updateVendorTresholdMin
+  updateVendorTresholdMin,
+  removeVendorThresholdMin
 } from '../../../fireQuery/contactsQuery';
 import { GREEN, SILVER, ORANGE, BLACK } from '../../../properties/Colors';
 import ThresholdContainer from './ThresholdContainer';
@@ -210,6 +211,12 @@ class VendorActionContainer extends React.Component {
                 variantKey,
                 vendorKey,
                 min: value
+              })}
+            removeThreshold={() =>
+              removeVendorThresholdMin({
+                contactId,
+                variantKey,
+                vendorKey
               })}
           />
           <Popconfirm
