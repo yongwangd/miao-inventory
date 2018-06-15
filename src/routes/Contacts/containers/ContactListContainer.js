@@ -315,6 +315,23 @@ class ContactListContainer extends Component {
             Log</Tag> */}
           <div style={{ width: '100%', marginBottom: 10 }}>
             <Tag color="pink">{visibleContacts.length} Products</Tag>
+            {!showInventoryInvalid && (
+              <Tag
+                color="#f50"
+                onClick={() => this.setState({ showInventoryInvalid: true })}
+              >
+                {visibleContacts.filter(c => !c.$_inventoryValid).length}{' '}
+                Products LOW Inventory
+              </Tag>
+            )}
+            {showInventoryInvalid && (
+              <Tag
+                color="#f50"
+                onClick={() => this.setState({ showInventoryInvalid: false })}
+              >
+                Show ALL
+              </Tag>
+            )}
             {showTagContainer && (
               <Button
                 onClick={() => this.setState({ showTagContainer: false })}
