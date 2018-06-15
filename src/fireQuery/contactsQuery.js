@@ -2,16 +2,19 @@ import moment from 'moment';
 import R from 'ramda';
 import { getFireDB } from './fireConnection';
 import { fireRef } from '../lib/firedog';
+import { addInventoryValidForContact } from '../routes/Contacts/contactUtility';
 
 const contactsRef = fireRef(getFireDB().ref('contacts/'));
 
 export const getContactsRef = () => getFireDB().ref('contacts/');
 export const contactsList = () =>
   contactsRef.arrayStream().map(arr =>
-    arr.map(ct => ({
-      ...ct,
-      tagKeys: !R.is(Object, ct.tagKeys) ? {} : ct.tagKeys
-    }))
+    arr
+      .map(ct => ({
+        ...ct,
+        tagKeys: !R.is(Object, ct.tagKeys) ? {} : ct.tagKeys
+      }))
+      .map(addInventoryValidForContact)
   );
 export const updateContact = contact => {
   const now = moment();

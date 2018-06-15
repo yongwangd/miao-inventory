@@ -40,7 +40,7 @@ import { parsePasteText } from './pasteHistoryUtil';
 import PasteTableContainer from './PasteTableContainer';
 
 @connect(state => ({
-  contacts: state.contactChunk.contacts.map(addInventoryValidForContact),
+  contacts: state.contactChunk.contacts,
   touchOnly: state.env.touchOnly,
   tags: state.tagChunk.tags,
   variantTags: state.variantTagChunk.tags,
@@ -60,6 +60,7 @@ class ContactListContainer extends Component {
     showEmailTextArea: false,
     showPhoneTextArea: false,
     showOnlyDeleted: false,
+    showInventoryInvalid: false,
     modalLoading: false,
     activeColorIds: [],
     activeTagKeys: [],
@@ -265,6 +266,7 @@ class ContactListContainer extends Component {
       activeColorIds,
       modalLoading,
       showOnlyDeleted,
+      showInventoryInvalid,
       showPhoneTextArea,
       activeTagKeys,
       activeVariantTagKeys,
@@ -280,6 +282,8 @@ class ContactListContainer extends Component {
     const visibleContacts = contacts.filter(
       c =>
         !showOnlyDeleted === !c.deleted &&
+        (!showInventoryInvalid ||
+          showInventoryInvalid === !c.$_inventoryValid) &&
         propContains(searchKey, contactColumns.map(col => col.key))(c) &&
         (R.isEmpty(activeColorIds) ||
           activeColorIds.includes(c.color || 'white')) &&
@@ -418,6 +422,26 @@ class ContactListContainer extends Component {
                 />
               </div>
             </Modal>
+          )}
+
+          {showInventoryInvalid ? (
+            <Icon
+              type="exclamation-circle-o"
+              className="fn-icon"
+              onClick={() =>
+                this.setState({
+                  showInventoryInvalid: false
+                })}
+            />
+          ) : (
+            <Icon
+              type="exclamation-circle-o"
+              className="fn-icon"
+              onClick={() =>
+                this.setState({
+                  showInventoryInvalid: true
+                })}
+            />
           )}
 
           {showOnlyDeleted ? (

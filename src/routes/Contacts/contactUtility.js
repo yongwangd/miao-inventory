@@ -187,53 +187,73 @@ export const exportContactInventory = (contacts, filename = 'inventory') => {
 
 export const addInventoryValidForContact = contact => {
   let contactValid = true;
-  Object.keys(contact.variantTagKeySet).forEach(variantKey => {
-    let invValid = true;
-    const variant = contact.variantTagKeySet[variantKey];
+  Object.keys(contact.variantTagKeySet || {})
+    .filter(k => !k.startsWith('$_'))
+    .forEach(variantKey => {
+      let invValid = true;
+      let variant = contact.variantTagKeySet[variantKey];
 
-    Object.keys(variant).forEach(vendorKey => {
-      const vendorOb = variant[vendorKey];
+      Object.keys(variant || {})
+        .filter(k => !k.startsWith('$_'))
+        .forEach(vendorKey => {
+          const vendorOb = variant[vendorKey];
 
-      const { thresholdMin, primary = 0, secondary = 0 } = vendorOb;
+          const { thresholdMin, primary = 0, secondary = 0 } = vendorOb;
 
-      const inventoryValid =
-        thresholdMin == null || primary + secondary >= thresholdMin;
+          const inventoryValid =
+            thresholdMin == null || primary + secondary >= thresholdMin;
 
-      console.log(vendorKey, vendorOb, inventoryValid);
-      vendorOb.$_inventoryValid = inventoryValid;
-      if (!inventoryValid) {
-        invValid = false;
+          console.log(vendorKey, vendorOb, inventoryValid);
+          if (typeof vendorOb === 'boolean') {
+            variant[vendorKey] = {
+              $_inventoryValid: inventoryValid
+            };
+          } else {
+            vendorOb.$_inventoryValid = inventoryValid;
+          }
+          if (!inventoryValid) {
+            invValid = false;
+          }
+        });
+      if (typeof variant === 'boolean') {
+        variant = {};
       }
+
+      const it = R.pickBy((val, key) => !key.startsWith('$_'), variant);
+      variant.$_primaryCount = R.sum(
+        R.values(it)
+          .map(v => {
+            console.log('object', R.values(variant), variant, v);
+            return v.primary;
+          })
+          .filter(v => v)
+      );
+      variant.$_secondaryCount = R.sum(
+        R.values(it)
+          .map(v => v.secondary)
+          .filter(v => v)
+      );
+
+      const variantThresholdMin = R.path(
+        ['thresholdValues', variantKey, 'thresholdMin'],
+        contact
+      );
+      variant.$_thresholdMin = variantThresholdMin;
+      variant.$_inventoryValid =
+        invValid &&
+        (!variantThresholdMin ||
+          variant.$_primaryCount + variant.$_secondaryCount >=
+            variantThresholdMin);
+      if (!variant.$_inventoryValid) {
+        contactValid = false;
+      }
+
+      contact.variantTagKeySet[variantKey] = variant;
     });
 
-    variant.$_primaryCount = R.sum(
-      R.values(variant)
-        .map(v => v.primary)
-        .filter(v => v)
-    );
-    variant.$_secondaryCount = R.sum(
-      R.values(variant.vendors)
-        .map(v => v.secondary)
-        .filter(v => v)
-    );
-
-    const variantThresholdMin = R.path(
-      ['thresholdValues', variantKey, 'thresholdMin'],
-      contact
-    );
-    variant.$_inventoryValid =
-      invValid &&
-      (!variantThresholdMin ||
-        variant.$_primaryCount + variant.$_secondaryCount >=
-          variantThresholdMin);
-    if (!variant.$_inventoryValid) {
-      contactValid = false;
-    }
-  });
-
   contact.$_inventoryValid = contactValid;
-
   console.log(contact);
+
   return contact;
 };
 

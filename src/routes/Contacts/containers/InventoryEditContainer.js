@@ -18,7 +18,8 @@ import {
 import {
   updateContactVariantVendors,
   updateContactVariants,
-  removeContactVariant
+  removeContactVariant,
+  updateVariantTresholdMin
 } from '../../../fireQuery/contactsQuery';
 import VendorActionContainer from './VendorActionContainer';
 import {
@@ -27,6 +28,7 @@ import {
 } from '../contactUtility';
 import InventoryCount from '../components/InventoryCount';
 import ThresholdContainer from './ThresholdContainer';
+import { RED, YELLOW } from '../../../properties/Colors';
 
 const { Panel } = Collapse;
 
@@ -77,35 +79,32 @@ class InventoryEditContainer extends React.Component {
     const summary = getContactInventorySummary(contact);
 
     // const variants = getTagArray(variantTags, variantTagKeySet);
+    // const variantArray = Object.keys(variantTagKeySet || {})
+    //   // .filter(key => !key.startsWith('$_'))
+    //   .map(key => ({
+    //     ...variantTags.find(k => k.key == key),
+    //     vendors: variantTagKeySet[key]
+    //   }));
+
     const variantArray = Object.keys(variantTagKeySet || {}).map(key => ({
       ...variantTags.find(k => k.key == key),
-      vendors: variantTagKeySet[key]
+      ...R.pickBy((v, k) => k.startsWith('$_'), variantTagKeySet[key]),
+      vendors: R.pickBy((v, k) => !k.startsWith('$_'), variantTagKeySet[key])
     }));
 
     console.log('variant array', variantArray);
     console.log('vendors', vendorTags);
     console.log('variants', variantArray);
 
-    const getVariantThreshold = variantKey =>
-      R.path(
-        ['thresholdValues', 'variants', variantKey, 'thresholdMin'],
-        contact
-      );
-
     const renderVariants = variants => {
       console.log('render');
 
       const getHeader = variant => {
-        const primary = R.sum(
-          R.values(variant.vendors)
-            .map(v => v.primary)
-            .filter(v => v)
-        );
-        const secondary = R.sum(
-          R.values(variant.vendors)
-            .map(v => v.secondary)
-            .filter(v => v)
-        );
+        console.log(variant, 'variant--');
+        const primary = variant.$_primaryCount;
+        const secondary = variant.$_secondaryCount;
+        const thresholdMin = variant.$_thresholdMin;
+        const inventoryValid = variant.$_inventoryValid;
 
         const total = primary + secondary;
         const menu = (
@@ -125,19 +124,16 @@ class InventoryEditContainer extends React.Component {
               </a>
             </li>
             <li className="list-group-item">
-              <ThresholdContainer />
-              <a
-                className="text-primary"
-                onClick={e => {
-                  e.preventDefault();
-                  this.setState({
-                    variantInEdit: variant,
-                    vendorsEditCopy: { ...variant.vendors }
-                  });
-                }}
-              >
-                Add Vendors
-              </a>
+              <ThresholdContainer
+                thresholdMin={thresholdMin}
+                valid={inventoryValid}
+                submit={min =>
+                  updateVariantTresholdMin({
+                    contactId: contact._id,
+                    variantKey: variant.key,
+                    min
+                  })}
+              />
             </li>
             <li className="list-group-item">
               <Popconfirm
@@ -157,6 +153,10 @@ class InventoryEditContainer extends React.Component {
           </ul>
         );
 
+        const badgeClass = `badge badge-${variant.$_inventoryValid
+          ? 'light'
+          : 'danger'}`;
+
         return (
           <div style={{ display: 'flex' }}>
             <span
@@ -175,7 +175,7 @@ class InventoryEditContainer extends React.Component {
                 Primary:
                 <span
                   className="badge badge-light"
-                  style={{ display: 'inline-block', width: 30 }}
+                  style={{ display: 'inline-block', width: 35 }}
                 >
                   {primary}
                 </span>
@@ -184,7 +184,7 @@ class InventoryEditContainer extends React.Component {
                 Secondary:
                 <span
                   className="badge badge-light"
-                  style={{ display: 'inline-block', width: 30 }}
+                  style={{ display: 'inline-block', width: 35 }}
                 >
                   {secondary}
                 </span>
@@ -192,8 +192,8 @@ class InventoryEditContainer extends React.Component {
               <span className="variant-header-span">
                 Total:
                 <span
-                  className="badge badge-light"
-                  style={{ display: 'inline-block', width: 30 }}
+                  className={badgeClass}
+                  style={{ display: 'inline-block', width: 35 }}
                 >
                   {total}
                 </span>
@@ -201,10 +201,10 @@ class InventoryEditContainer extends React.Component {
               <span className="variant-header-span">
                 Threshold:
                 <span
-                  className="badge badge-light"
-                  style={{ display: 'inline-block', width: 30 }}
+                  className={badgeClass}
+                  style={{ display: 'inline-block', width: 35 }}
                 >
-                  {total}
+                  {thresholdMin}
                 </span>
               </span>
               <Dropdown overlay={menu}>
@@ -225,7 +225,10 @@ class InventoryEditContainer extends React.Component {
 
       const renderVendor = (vendor, variant) => (
         <tr
-          style={{ cursor: 'pointer' }}
+          style={{
+            cursor: 'pointer',
+            backgroundColor: vendor.$_inventoryValid ? '' : YELLOW
+          }}
           onClick={() =>
             this.setState({
               vendorInEdit: vendor,
@@ -236,6 +239,7 @@ class InventoryEditContainer extends React.Component {
             <td key={col.key}>{vendor[col.dataIndex] || '0'}</td>
           ))}
           <td>{(vendor.primary || 0) + (vendor.secondary || 0)}</td>
+          <td>{vendor.thresholdMin}</td>
           {/* <td>
             <a
               onClick={() =>
@@ -291,6 +295,7 @@ class InventoryEditContainer extends React.Component {
                             </th>
                           ))}
                           <th scope="col">Total</th>
+                          <th scope="col">Threshold</th>
                         </tr>
                       </thead>
                       <tbody>
