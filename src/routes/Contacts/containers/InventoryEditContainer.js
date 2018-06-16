@@ -25,7 +25,9 @@ import {
 import VendorActionContainer from './VendorActionContainer';
 import {
   exportContactInventory,
-  getContactInventorySummary
+  getContactInventorySummary,
+  removePropertiesRecur,
+  cleanMetaData
 } from '../contactUtility';
 import InventoryCount from '../components/InventoryCount';
 import ThresholdContainer from './ThresholdContainer';
@@ -159,7 +161,8 @@ class InventoryEditContainer extends React.Component {
           </ul>
         );
 
-        const badgeClass = `badge badge-${variant.$_inventoryValid
+        const badgeClass = `badge badge-${variant.$_thresholdMin == null ||
+        variant.$_inventoryValid
           ? 'light'
           : 'danger'}`;
 
@@ -198,7 +201,9 @@ class InventoryEditContainer extends React.Component {
               <span className="variant-header-span">
                 Total:
                 <span
-                  className={badgeClass}
+                  className={`badge badge-${variant.$_inventoryValid
+                    ? 'light'
+                    : 'danger'}`}
                   style={{ display: 'inline-block', width: 35 }}
                 >
                   {total}
@@ -428,7 +433,7 @@ class InventoryEditContainer extends React.Component {
                   );
                   this.setState({
                     variantsEditCopy: {
-                      ...variantTagKeySet,
+                      ...cleanMetaData(variantTagKeySet),
                       ...diff
                     }
                   });

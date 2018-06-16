@@ -42,10 +42,28 @@ export const removeVendorFromVariant = (contactId, variantKey, vendorKey) =>
     .ref(`contacts/${contactId}/variantTagKeySet/${variantKey}/${vendorKey}`)
     .remove();
 
-export const updateContactVariants = (contactId, variants) =>
-  getFireDB()
+export const updateContactVariants = (contactId, variants) => {
+  console.log('variantsbeforeedit');
+  for (const va in variants) {
+    [
+      '$_primaryCount',
+      '$_secondaryCount',
+      '$_inventoryValid',
+      '$_thresholdMin'
+    ].forEach(key => delete variants[va][key]);
+  }
+
+  for (const va in variants) {
+    if (R.isEmpty(variants[va])) {
+      variants[va] = true;
+    }
+  }
+
+  console.log(variants, 'after prep');
+  return getFireDB()
     .ref(`contacts/${contactId}/variantTagKeySet`)
     .set(variants);
+};
 
 export const removeContactVariant = (contactId, variantKey) =>
   getFireDB()

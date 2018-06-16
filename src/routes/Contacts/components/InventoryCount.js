@@ -1,4 +1,5 @@
 import React from 'react';
+import { GREEN } from '../../../properties/Colors';
 
 const InventoryCount = props => {
   const {
@@ -17,10 +18,13 @@ const InventoryCount = props => {
       <span className="inventory-count">
         <a style={{ fontSize }}>Primary:</a>
         <span
-          style={{ fontSize, marginLeft: spanLeft, marginRight: spanRight }}
-          className={`badge ${primary > 0
-            ? 'badge-danger'
-            : 'badge-secondary'}`}
+          style={{
+            fontSize,
+            marginLeft: spanLeft,
+            marginRight: spanRight,
+            fontColor: GREEN
+          }}
+          className={`badge ${primary > 0 ? 'badge-light' : 'badge-secondary'}`}
         >
           {primary}
         </span>
@@ -28,9 +32,14 @@ const InventoryCount = props => {
       <span className="inventory-count">
         <a style={{ fontSize }}>Secondary:</a>
         <span
-          style={{ fontSize, marginLeft: spanLeft, marginRight: spanRight }}
+          style={{
+            fontSize,
+            marginLeft: spanLeft,
+            marginRight: spanRight,
+            fontColor: GREEN
+          }}
           className={`badge ${secondary > 0
-            ? 'badge-danger'
+            ? 'badge-light'
             : 'badge-secondary'}`}
         >
           {secondary}
@@ -39,8 +48,13 @@ const InventoryCount = props => {
       <span className="inventory-count">
         <a style={{ fontSize }}>Total:</a>
         <span
-          style={{ fontSize, marginLeft: spanLeft, marginRight: spanRight }}
-          className={`badge ${total > 0 ? 'badge-danger' : 'badge-secondary'}`}
+          style={{
+            fontSize,
+            marginLeft: spanLeft,
+            marginRight: spanRight,
+            fontColor: GREEN
+          }}
+          className={`badge ${total > 0 ? 'badge-light' : 'badge-secondary'}`}
         >
           {total}
         </span>

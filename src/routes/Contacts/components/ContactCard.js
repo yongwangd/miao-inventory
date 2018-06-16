@@ -132,12 +132,12 @@ class ContactCard extends React.Component {
       </span>
     );
 
+    const cardStyle = { backgroundColor: colorObj.value, margin: 5 };
+    if (!info.$_inventoryValid) {
+      cardStyle.border = '4px solid red';
+    }
     return (
-      <Card
-        style={{ backgroundColor: colorObj.value, margin: 5 }}
-        className="contact-card"
-        bordered={false}
-      >
+      <Card style={cardStyle} className="contact-card" bordered={false}>
         <div className="card-title">
           <div className="title-text" style={{ color: colorObj.font }}>
             <a onClick={() => onInventoryClick(info)}>{nameTitle}</a>

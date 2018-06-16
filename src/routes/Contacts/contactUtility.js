@@ -222,10 +222,7 @@ export const addInventoryValidForContact = contact => {
       const it = R.pickBy((val, key) => !key.startsWith('$_'), variant);
       variant.$_primaryCount = R.sum(
         R.values(it)
-          .map(v => {
-            console.log('object', R.values(variant), variant, v);
-            return v.primary;
-          })
+          .map(v => v.primary)
           .filter(v => v)
       );
       variant.$_secondaryCount = R.sum(
@@ -252,9 +249,39 @@ export const addInventoryValidForContact = contact => {
     });
 
   contact.$_inventoryValid = contactValid;
-  console.log(contact);
 
   return contact;
+};
+
+export const removePropertiesRecur = (properties, obj) => {
+  for (const prop in obj) {
+    if (properties.includes(prop)) delete obj[prop];
+    else if (typeof obj[prop] === 'object') {
+      console.log('delete', obj[prop]);
+      removePropertiesRecur(properties, obj[prop]);
+    }
+  }
+};
+
+// JSON.parse(
+//   JSON.stringify(obj, (k, v) => (properties.includes(k) ? undefined : v))
+// );
+
+export const cleanMetaData = obj => {
+  return obj;
+  console.log(obj, 'before--');
+  const after = removePropertiesRecur(
+    [
+      '$_primaryCount',
+      '$_secondaryCount',
+      '$_inventoryValid',
+      '$_thresholdMin'
+    ],
+    obj
+  );
+
+  console.log(after, 'after edit');
+  return after;
 };
 
 export const a = 4;
