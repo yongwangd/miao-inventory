@@ -25,7 +25,7 @@ class VendorActionContainer extends React.Component {
       contactId,
       variantKey,
       vendorKey,
-      onVendorRemoved
+      onVendorRemoved = R.identity
     } = this.props;
 
     if (!vendorInEdit) {

@@ -277,10 +277,8 @@ export const cleanMetaData = (
   const replaceEmpty = obj => {
     for (const key in obj) {
       if (R.is(Object, obj[key]) && R.isEmpty(obj[key])) {
-        console.log('replace', obj[key]);
         obj[key] = true;
       } else if (R.is(Object, obj[key]) && !R.isEmpty(obj[key])) {
-        console.log('recursion', obj[key]);
         replaceEmpty(obj[key]);
       }
     }
