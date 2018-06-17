@@ -27,6 +27,7 @@
     "jasmine": true
   },
   "rules": {
+    "no-restricted-syntax":"off",
     "function-paren-newline": "off",
     "global-require": "off",
     "import/no-extraneous-dependencies": "off",

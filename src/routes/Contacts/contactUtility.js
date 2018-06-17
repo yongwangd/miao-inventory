@@ -253,35 +253,63 @@ export const addInventoryValidForContact = contact => {
   return contact;
 };
 
-export const removePropertiesRecur = (properties, obj) => {
-  for (const prop in obj) {
-    if (properties.includes(prop)) delete obj[prop];
-    else if (typeof obj[prop] === 'object') {
-      console.log('delete', obj[prop]);
-      removePropertiesRecur(properties, obj[prop]);
+export const cleanMetaData = (
+  obj,
+  properties = [
+    '$_primaryCount',
+    '$_secondaryCount',
+    '$_inventoryValid',
+    '$_thresholdMin'
+  ]
+) => {
+  if (!R.is(Object, obj)) return obj;
+
+  const removeProperties = obj => {
+    for (const key in obj) {
+      if (properties.includes(key)) {
+        delete obj[key];
+      } else if (typeof obj[key] === 'object') {
+        removeProperties(obj[key]);
+      }
     }
-  }
+  };
+
+  const replaceEmpty = obj => {
+    for (const key in obj) {
+      if (R.is(Object, obj[key]) && R.isEmpty(obj[key])) {
+        console.log('replace', obj[key]);
+        obj[key] = true;
+      } else if (R.is(Object, obj[key]) && !R.isEmpty(obj[key])) {
+        console.log('recursion', obj[key]);
+        replaceEmpty(obj[key]);
+      }
+    }
+  };
+
+  removeProperties(obj);
+  replaceEmpty(obj);
+  return obj;
 };
 
 // JSON.parse(
 //   JSON.stringify(obj, (k, v) => (properties.includes(k) ? undefined : v))
 // );
 
-export const cleanMetaData = obj => {
-  return obj;
-  console.log(obj, 'before--');
-  const after = removePropertiesRecur(
-    [
-      '$_primaryCount',
-      '$_secondaryCount',
-      '$_inventoryValid',
-      '$_thresholdMin'
-    ],
-    obj
-  );
+// export const cleanMetaData = obj => {
+//   return obj;
+//   console.log(obj, 'before--');
+//   const after = removePropertiesRecur(
+//     [
+//       '$_primaryCount',
+//       '$_secondaryCount',
+//       '$_inventoryValid',
+//       '$_thresholdMin'
+//     ],
+//     obj
+//   );
 
-  console.log(after, 'after edit');
-  return after;
-};
+//   console.log(after, 'after edit');
+//   return after;
+// };
 
 export const a = 4;

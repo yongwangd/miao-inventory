@@ -2,7 +2,10 @@ import moment from 'moment';
 import R from 'ramda';
 import { getFireDB } from './fireConnection';
 import { fireRef } from '../lib/firedog';
-import { addInventoryValidForContact } from '../routes/Contacts/contactUtility';
+import {
+  addInventoryValidForContact,
+  cleanMetaData
+} from '../routes/Contacts/contactUtility';
 
 const contactsRef = fireRef(getFireDB().ref('contacts/'));
 
@@ -28,14 +31,14 @@ export const updateContact = contact => {
 export const updateContactProperty = (contact, propertyName, value) => {
   const now = moment();
   return contactsRef.updateById(contact._id, {
-    [propertyName]: value
+    [propertyName]: cleanMetaData(value)
   });
 };
 
 export const updateContactVariantVendors = (contactId, variantKey, values) =>
   getFireDB()
     .ref(`contacts/${contactId}/variantTagKeySet/${variantKey}`)
-    .set(values);
+    .set(cleanMetaData(values));
 
 export const removeVendorFromVariant = (contactId, variantKey, vendorKey) =>
   getFireDB()
@@ -44,31 +47,50 @@ export const removeVendorFromVariant = (contactId, variantKey, vendorKey) =>
 
 export const updateContactVariants = (contactId, variants) => {
   console.log('variantsbeforeedit');
-  for (const va in variants) {
-    [
-      '$_primaryCount',
-      '$_secondaryCount',
-      '$_inventoryValid',
-      '$_thresholdMin'
-    ].forEach(key => delete variants[va][key]);
-  }
+  // for (const va in variants) {
+  //   [
+  //     '$_primaryCount',
+  //     '$_secondaryCount',
+  //     '$_inventoryValid',
+  //     '$_thresholdMin'
+  //   ].forEach(key => delete variants[va][key]);
 
-  for (const va in variants) {
-    if (R.isEmpty(variants[va])) {
-      variants[va] = true;
-    }
-  }
+  //   for (const vendor in variants[va]) {
+  //     ['$_inventoryValid', '$_thresholdMin'].forEach(
+  //       key => delete variants[va][vendor][key]
+  //     );
+  //   }
 
-  console.log(variants, 'after prep');
+  //   for (const te in variants[va]) {
+  //     if (R.isEmpty(variants[va][te])) {
+  //       variants[va][te] = true;
+  //     }
+  //   }
+  // }
+
+  // for (const va in variants) {
+  //   if (R.isEmpty(variants[va])) {
+  //     variants[va] = true;
+  //   }
+  // }
+
+  const afterClean = cleanMetaData(variants);
+
+  console.log(afterClean, 'after prep');
   return getFireDB()
     .ref(`contacts/${contactId}/variantTagKeySet`)
-    .set(variants);
+    .set(afterClean);
 };
 
-export const removeContactVariant = (contactId, variantKey) =>
-  getFireDB()
+export const removeContactVariant = (contactId, variantKey) => {
+  const removeVariant = getFireDB()
     .ref(`contacts/${contactId}/variantTagKeySet/${variantKey}`)
     .remove();
+  const removeThresholdValue = getFireDB()
+    .ref(`contacts/${contactId}/thresholdValues/${variantKey}`)
+    .remove();
+  return Promise.all([removeVariant, removeThresholdValue]);
+};
 
 export const updateContactById = (id, contact) => {
   const now = moment();

@@ -433,7 +433,7 @@ class InventoryEditContainer extends React.Component {
                   );
                   this.setState({
                     variantsEditCopy: {
-                      ...cleanMetaData(variantTagKeySet),
+                      ...variantTagKeySet,
                       ...diff
                     }
                   });
