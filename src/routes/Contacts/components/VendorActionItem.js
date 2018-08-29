@@ -16,7 +16,7 @@ class VendorActionItem extends React.Component {
       text = 'Pick a NUmber',
       onSubmit,
       onCancel,
-      valid
+      valid = () => true
     } = this.props;
     const { value } = this.state;
     const { onValueChange } = this;
@@ -39,7 +39,8 @@ class VendorActionItem extends React.Component {
               this.inputElm = elm;
             }}
             onKeyDown={e =>
-              e.key === 'Enter' && valid(value) && onSubmit(value)}
+              e.key === 'Enter' && valid(value) && onSubmit(value)
+            }
           />
           <Button
             disabled={!valid(value)}

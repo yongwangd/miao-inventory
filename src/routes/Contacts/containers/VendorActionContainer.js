@@ -77,7 +77,8 @@ class VendorActionContainer extends React.Component {
         text: 'Remove from Primary Storage: ',
         enabled: primary > 0,
         min: 1,
-        valid: value => value > 0 && value <= primary,
+        // valid: value => value > 0 && value <= primary,
+        valid: value => value > 0,
         onSubmit: value =>
           updateVendorQuantity({
             ...generalParams,
@@ -96,8 +97,9 @@ class VendorActionContainer extends React.Component {
         text: 'Move from Primary to Secondary',
         enabled: primary > 0,
         min: 1,
-        max: primary,
-        valid: value => value > 0 && value <= primary,
+        // max: primary,
+        // valid: value => value > 0 && value <= primary,
+        valid: value => value > 0,
         onSubmit: value =>
           Promise.all([
             updateVendorQuantity({
@@ -121,8 +123,9 @@ class VendorActionContainer extends React.Component {
         text: 'Move from Secondary to Primary',
         enabled: secondary > 0,
         min: 1,
-        max: secondary,
-        valid: value => value > 0 && value <= secondary,
+        // max: secondary,
+        // valid: value => value > 0 && value <= secondary,
+        valid: value => value > 0,
         onSubmit: value =>
           Promise.all([
             updateVendorQuantity({
@@ -146,8 +149,9 @@ class VendorActionContainer extends React.Component {
         text: 'Remove from Secondary',
         enabled: secondary > 0,
         min: 1,
-        max: secondary,
-        valid: value => value > 0 && value <= secondary,
+        // max: secondary,
+        // valid: value => value > 0 && value <= secondary,
+        valid: value => value > 0,
         onSubmit: value =>
           updateVendorQuantity({
             ...generalParams,
@@ -159,8 +163,8 @@ class VendorActionContainer extends React.Component {
       },
       resetPrimary: {
         text: 'Reset Primary to:',
-        min: 0,
-        valid: value => value >= 0,
+        // min: 0,
+        // valid: value => value >= 0,
         onSubmit: value =>
           updateVendorQuantity({
             ...generalParams,
@@ -170,8 +174,8 @@ class VendorActionContainer extends React.Component {
       },
       resetSecondary: {
         text: 'Reset Secondary to:',
-        min: 0,
-        valid: value => value >= 0,
+        // min: 0,
+        // valid: value => value >= 0,
         onSubmit: value =>
           updateVendorQuantity({
             ...generalParams,
@@ -211,25 +215,25 @@ class VendorActionContainer extends React.Component {
                 variantKey,
                 vendorKey,
                 min: value
-              })}
+              })
+            }
             removeThreshold={() =>
               removeVendorThresholdMin({
                 contactId,
                 variantKey,
                 vendorKey
-              })}
+              })
+            }
           />
           <Popconfirm
             title="Are you sure to Remove this Vendor?"
             onConfirm={() => {
-              removeVendorFromVariant(
-                contactId,
-                variantKey,
-                vendorKey
-              ).then(() => {
-                message.success('Vendor Removed');
-                onVendorRemoved();
-              });
+              removeVendorFromVariant(contactId, variantKey, vendorKey).then(
+                () => {
+                  message.success('Vendor Removed');
+                  onVendorRemoved();
+                }
+              );
             }}
           >
             <Button style={{ float: 'right' }} type="danger">
@@ -310,7 +314,8 @@ class VendorActionContainer extends React.Component {
                   x2={mode.x2}
                   y2={mode.y2}
                   onClick={() =>
-                    mode.enabled && this.setState({ showEditModal: mode.key })}
+                    mode.enabled && this.setState({ showEditModal: mode.key })
+                  }
                   markerEnd={
                     mode.key == showEditModal
                       ? 'url(#TriangleActive)'
@@ -388,7 +393,8 @@ class VendorActionContainer extends React.Component {
               onSubmit={value =>
                 modes[showEditModal]
                   .onSubmit(value)
-                  .then(() => this.setState({ showEditModal: null }))}
+                  .then(() => this.setState({ showEditModal: null }))
+              }
               onCancel={() => this.setState({ showEditModal: null })}
             />
           )}
